@@ -1,0 +1,24 @@
+{
+    "name"             : "alledia/ospamanot",
+    "description"      : "OSpam-a-not",
+    "minimum-stability": "stable",
+    "license"          : "GPL-2+",
+    "type"             : "joomla.plugin",
+    "extra"            : {
+        "element"        : "plg_system_ospamanot",
+        "element-short"  : "ospamanot",
+        "name"           : "OSpam-a-not",
+        "folder"         : "system",
+        "client"         : "site",
+        "package-license": "free"
+    },
+    "authors"          : [
+        {
+            "name" : "Alledia",
+            "email": "hello@alledia.com"
+        }
+    ],
+    "require"          : {
+        "php"       : ">= 5.3"
+    }
+}
