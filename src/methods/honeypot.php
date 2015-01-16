@@ -100,29 +100,32 @@ class PlgSystemOspamanotHoneypot extends AbstractPlugin
      *
      * @param string $body
      * @param string $form
-     * @param string $endtag
+     * @param string $endTag
      *
      * @return void
      */
-    protected function addHiddenFields(&$body, $form, $endtag)
+    protected function addHiddenFields(&$body, $form, $endTag)
     {
         foreach (array_keys($this->honeyPots) as $idx => $name) {
             if (stripos($form, $name) === false) {
-                $now    = time();
-                $secret = $this->getHashedFieldName();
+                preg_match('#<\s*/\s*head\s*>#', $body, $headTag);
+                $headTag = array_pop($headTag);
+                $secret  = $this->getHashedFieldName();
 
+                $now      = time();
                 $honeyPot = "<input type=\"text\" name=\"{$name}\" value=\"\"/>";
                 $timeGate = "<input type=\"hidden\" name=\"{$secret}\" value=\"{$now}.{$idx}\"/>";
-                $replace  = str_replace($endtag, $honeyPot . $timeGate . $endtag, $form);
+                $replace  = str_replace($endTag, $honeyPot . $timeGate . $endTag, $form);
                 if ($replace != $form) {
                     $body = str_replace($form, $replace, $body);
 
                     if (!$this->honeyPots[$name]) {
                         $css  = '<style type="text/css">input[name=' . $name . '] {display: none;}</style>';
-                        $body = str_replace('</head>', "\n" . $css . "\n</head>", $body);
+                        $body = str_replace($headTag, "\n" . $css . "\n" . $headTag, $body);
                     }
-                    $this->honeyPots[$name]++;
+                    $this->honeyPots[$name] ++;
                 }
+
                 return;
             }
         }
