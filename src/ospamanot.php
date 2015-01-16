@@ -18,6 +18,8 @@ require_once 'include.php';
  */
 class PlgSystemOspamanot extends AbstractPlugin
 {
+    protected $namespace = 'Ospamanot';
+
     protected $honeyPots = array(
         'your_name_here'    => 0,
         'your_address_here' => 0,
@@ -25,20 +27,13 @@ class PlgSystemOspamanot extends AbstractPlugin
         'my_address'        => 0
     );
 
-    public function __construct(&$subject, $config = array())
-    {
-        $this->namespace = 'Ospamanot';
-
-        parent::__construct($subject, $config);
-    }
-
     public function onAfterInitialise()
     {
-        $app = JFactory::getApplication();
+        $app     = JFactory::getApplication();
         $message = array();
 
         if ($app->input->getMethod() == 'POST') {
-            $secret = JFactory::getConfig()->get('secret');
+            $secret = $this->getHashedFieldName();
 
             if (array_key_exists($secret, $_REQUEST)) {
                 $timeKey = $app->input->getCmd($secret);
@@ -95,8 +90,9 @@ class PlgSystemOspamanot extends AbstractPlugin
     {
         foreach (array_keys($this->honeyPots) as $idx => $name) {
             if (stripos($form, $name) === false) {
-                $secret   = JFactory::getConfig()->get('secret');
                 $now      = time();
+                $secret   = $this->getHashedFieldName();
+
                 $honeyPot = "<input type=\"text\" name=\"{$name}\" value=\"\"/>";
                 $timeGate = "<input type=\"hidden\" name=\"{$secret}\" value=\"{$now}.{$idx}\"/>";
                 $replace  = str_replace($endtag, $honeyPot . $timeGate . $endtag, $form);
@@ -113,4 +109,16 @@ class PlgSystemOspamanot extends AbstractPlugin
             }
         }
     }
+
+    protected function getHashedFieldName()
+    {
+
+        $config = JFactory::getConfig();
+
+        $sitename = $config->get('sitename');
+        $secret   = $config->get('secret');
+
+        return md5($sitename . $secret);
+    }
+
 }
