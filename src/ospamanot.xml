@@ -39,6 +39,7 @@
 
     <files>
         <folder>language</folder>
+        <folder>methods</folder>
         <folder>library</folder>
         <folder>views</folder>
         <filename plugin="ospamanot">ospamanot.php</filename>
