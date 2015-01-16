@@ -123,7 +123,7 @@ class PlgSystemOspamanotHoneypot extends AbstractPlugin
                         $css  = '<style type="text/css">input[name=' . $name . '] {display: none;}</style>';
                         $body = str_replace($headTag, "\n" . $css . "\n" . $headTag, $body);
                     }
-                    $this->honeyPots[$name] ++;
+                    $this->honeyPots[$name]++;
                 }
 
                 return;
