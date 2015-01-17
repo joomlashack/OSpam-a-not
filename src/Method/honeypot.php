@@ -58,7 +58,8 @@ class HoneyPot extends AbstractMethod
                         // TimeGate passed, check honey pot
                         $nameList = array_keys($this->honeyPots);
                         if (array_key_exists($idx, $nameList)) {
-                            if (empty($_REQUEST[$nameList[$idx]])) {
+                            $honeyPot = $nameList[$idx];
+                            if (isset($_REQUEST[$honeyPot]) && !$app->input->get($honeyPot)) {
                                 // Honey pot passed
                                 return;
                             }
