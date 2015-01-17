@@ -7,11 +7,15 @@
  * @license    http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
-use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+namespace Alledia\PlgSystemOspamanot\Method;
+
+use \Exception;
+use \JFactory;
+use \JText;
 
 defined('_JEXEC') or die();
 
-class PlgSystemOspamanotHoneypot extends AbstractPlugin
+class HoneyPot extends AbstractMethod
 {
     /**
      * @var string
@@ -47,22 +51,26 @@ class PlgSystemOspamanotHoneypot extends AbstractPlugin
                 $timeKey = $app->input->getCmd($secret);
 
                 if (strpos($timeKey, '.') !== false) {
+                    // timeGate field looks reasonable, find load time and honey pot index
                     list($startTime, $idx) = explode('.', $timeKey);
 
                     if ((int)$startTime) {
+                        // TimeGate passed, check honey pot
                         $nameList = array_keys($this->honeyPots);
                         if (array_key_exists($idx, $nameList)) {
-                            if (!empty($_REQUEST[$nameList[$idx]])) {
-                                $this->_subject->trigger('onSpamanotBlock', array(__METHOD__));
+                            if (empty($_REQUEST[$nameList[$idx]])) {
+                                // Honey pot passed
+                                return;
                             }
                         }
-                    } else {
-                        $this->_subject->trigger('onSpamanotBlock', array(__METHOD__));
                     }
-                } else {
-                    $this->_subject->trigger('onSpamanotBlock', array(__METHOD__));
                 }
+
+                // Failed timeGate/HoneyPot tests
+                $this->block(JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM'));
             }
+
+            // @TODO: does it make sense to consider an unprotected form as a hack attempt?
         }
     }
 
@@ -81,14 +89,14 @@ class PlgSystemOspamanotHoneypot extends AbstractPlugin
                 $app = JFactory::getApplication();
                 $j2  = !method_exists($app, 'getBody');
 
-                $body = $j2 ? JResponse::getBody() : $app->getBody();
+                $body = $j2 ? \JResponse::getBody() : $app->getBody();
 
                 $regex = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
                 if (preg_match_all($regex, $body, $matches)) {
                     foreach ($matches[0] as $idx => $form) {
                         $this->addHiddenFields($body, $form, $matches[2][$idx]);
                     }
-                    $j2 ? JResponse::setBody($body) : $app->setBody($body);
+                    $j2 ? \JResponse::setBody($body) : $app->setBody($body);
                 }
 
             }

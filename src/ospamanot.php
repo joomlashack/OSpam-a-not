@@ -31,6 +31,9 @@ class PlgSystemOspamanot extends AbstractPlugin
     {
         parent::__construct($subject, $config);
 
+        // @todo: Remove if called from parent class
+        $this->init();
+
         // We only care about guest users on the frontend right now
         if (JFactory::getApplication()->isSite()) {
             $this->registerMethods($subject, $config);
@@ -47,49 +50,25 @@ class PlgSystemOspamanot extends AbstractPlugin
     {
         jimport('joomla.filesystem.folder');
 
-        $methods = JFolder::files(__DIR__ . '/methods', '\.php$', false, true);
-        foreach ($methods as $path) {
-            $name      = strtolower(basename($path, '.php'));
-            $className = __CLASS__ . ucfirst($name);
+        $path      = __DIR__ . '/Method';
+        $baseClass = $path . '/AbstractMethod.php';
+        if (is_file($baseClass) && $methods = JFolder::files($path, '^(?!AbstractMethod).*\.php$', false, true)) {
+            require_once $baseClass;
 
-            require_once $path;
-            if (class_exists($className)) {
-                $config['name'] = $this->_name . $name;
+            foreach ($methods as $path) {
+                $name      = basename($path, '.php');
+                $className = 'Alledia\\' . __CLASS__ . '\\Method\\' . $name;
 
-                $method = new $className($subject, $config);
-                $subject->attach($method);
+                require_once $path;
+                if (class_exists($className)) {
+                    $config['name'] = $this->_name . strtolower($name);
+
+                    $method = new $className($subject, $config);
+                    $subject->attach($method);
+                } else {
+                    die($className);
+                }
             }
-        }
-    }
-
-    /**
-     * Standard response for use by methods that want to block the user for any reason
-     *
-     * @param string $method
-     * @param string $message
-     *
-     * @throws Exception
-     * @return void
-     */
-    public function onSpamanotBlock($method, $message = null)
-    {
-        if (strpos($method, '::') !== false) {
-            list($caller, $method) = explode('::', $method);
-        }
-
-        if ($message === null) {
-            $message = JText::_('JERROR_ALERTNOAUTHOR');
-        }
-
-        switch (strtolower($method)) {
-            case 'onafterinitialise':
-            case 'onafterroute':
-            case 'onafterrender':
-                JFactory::getApplication()->redirect('index.php', $message);
-                break;
-
-            default:
-                throw new Exception($method . ': ' . $message, 403);
         }
     }
 }
