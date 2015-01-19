@@ -48,21 +48,18 @@ class HoneyPot extends AbstractMethod
             $secret = $this->getHashedFieldName();
 
             if (array_key_exists($secret, $_REQUEST)) {
-                $timeKey = $app->input->getCmd($secret);
+                $timeKey = $app->input->get($secret);
 
-                if (strpos($timeKey, '.') !== false) {
+                if (preg_match('/^\d+\.\d$/', $timeKey)) {
                     // timeGate field looks reasonable, find load time and honey pot index
                     list($startTime, $idx) = explode('.', $timeKey);
 
-                    if ((int)$startTime) {
-                        // TimeGate passed, check honey pot
-                        $nameList = array_keys($this->honeyPots);
-                        if (array_key_exists($idx, $nameList)) {
-                            $honeyPot = $nameList[$idx];
-                            if (isset($_REQUEST[$honeyPot]) && !$app->input->get($honeyPot)) {
-                                // Honey pot passed
-                                return;
-                            }
+                    $nameList = array_keys($this->honeyPots);
+                    if (array_key_exists($idx, $nameList)) {
+                        $honeyPot = $nameList[$idx];
+                        if (isset($_REQUEST[$honeyPot]) && !$app->input->get($honeyPot)) {
+                            // Honey pot passed
+                            return;
                         }
                     }
                 }
