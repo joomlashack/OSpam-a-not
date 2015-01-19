@@ -31,8 +31,7 @@ class PlgSystemOspamanot extends AbstractPlugin
     {
         parent::__construct($subject, $config);
 
-        // @todo: Remove if called from parent class
-        $this->init();
+        $this->loadLanguage();
 
         // We only care about guest users on the frontend right now
         if (JFactory::getApplication()->isSite()) {
