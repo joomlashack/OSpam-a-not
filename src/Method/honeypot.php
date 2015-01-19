@@ -54,12 +54,16 @@ class HoneyPot extends AbstractMethod
                     // timeGate field looks reasonable, find load time and honey pot index
                     list($startTime, $idx) = explode('.', $timeKey);
 
-                    $nameList = array_keys($this->honeyPots);
-                    if (array_key_exists($idx, $nameList)) {
-                        $honeyPot = $nameList[$idx];
-                        if (isset($_REQUEST[$honeyPot]) && !$app->input->get($honeyPot)) {
-                            // Honey pot passed
-                            return;
+                    $timeGate = (float)$this->params->get('timeGate', 0);
+                    if (!$timeGate || (time()-$startTime) > $timeGate) {
+                        // timeGate test ignored or passed
+                        $nameList = array_keys($this->honeyPots);
+                        if (array_key_exists($idx, $nameList)) {
+                            $honeyPot = $nameList[$idx];
+                            if (isset($_REQUEST[$honeyPot]) && !$app->input->get($honeyPot)) {
+                                // Honey pot passed
+                                return;
+                            }
                         }
                     }
                 }
