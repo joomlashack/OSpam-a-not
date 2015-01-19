@@ -11,6 +11,7 @@ namespace Alledia\PlgSystemOspamanot\Method;
 
 use \Exception;
 use \JFactory;
+use \JRoute;
 use \JText;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 
@@ -46,7 +47,9 @@ abstract class AbstractMethod extends AbstractPlugin
             case 'onafterinitialise':
             case 'onafterroute':
             case 'onafterrender':
-                JFactory::getApplication()->redirect('index.php', $message);
+                $app = JFactory::getApplication();
+                $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: JRoute::_('index.php');
+                JFactory::getApplication()->redirect(JRoute::_($link), $message, 'error');
                 break;
 
             default:
