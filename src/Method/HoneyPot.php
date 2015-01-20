@@ -55,7 +55,7 @@ class HoneyPot extends AbstractMethod
                     list($startTime, $idx) = explode('.', $timeKey);
 
                     $timeGate = (float)$this->params->get('timeGate', 0);
-                    if (!$timeGate || (time()-$startTime) > $timeGate) {
+                    if (!$timeGate || (time() - $startTime) > $timeGate) {
                         // timeGate test ignored or passed
                         $nameList = array_keys($this->honeyPots);
                         if (array_key_exists($idx, $nameList)) {
