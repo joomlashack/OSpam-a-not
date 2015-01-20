@@ -93,10 +93,9 @@ class HoneyPot extends AbstractMethod
 
                 $body = $j2 ? \JResponse::getBody() : $app->getBody();
 
-                $regex = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
-                if (preg_match_all($regex, $body, $matches)) {
-                    foreach ($matches[0] as $idx => $form) {
-                        $this->addHiddenFields($body, $form, $matches[2][$idx]);
+                if ($forms = $this->findForms($body)) {
+                    foreach ($forms as $idx => $form) {
+                        $this->addHiddenFields($body, $form->source, $form->endTag);
                     }
                     $j2 ? \JResponse::setBody($body) : $app->setBody($body);
                 }
@@ -154,5 +153,28 @@ class HoneyPot extends AbstractMethod
         $secret   = $config->get('secret');
 
         return md5($siteName . $secret);
+    }
+
+    /**
+     * Find all candidate forms for spam protection
+     *
+     * @param $text
+     *
+     * @return array
+     */
+    protected function findForms($text)
+    {
+        $forms = array();
+
+        $regex = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
+        if (preg_match_all($regex, $text, $matches)) {
+            foreach ($matches[0] as $idx => $form) {
+                $forms[] = (object)array(
+                    'source' => $form,
+                    'endTag' => $matches[2][$idx]
+                );
+            }
+        }
+        return $forms;
     }
 }
