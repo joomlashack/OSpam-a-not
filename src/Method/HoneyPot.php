@@ -164,17 +164,18 @@ class HoneyPot extends AbstractMethod
      */
     protected function findForms($text)
     {
-        $forms = array();
+        $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
+        $regexFields = '#<\s*(?:input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
 
-        $regex = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
-        if (preg_match_all($regex, $text, $matches)) {
+        $forms = array();
+        if (preg_match_all($regexForm, $text, $matches)) {
             foreach ($matches[0] as $idx => $form) {
                 $submit = 0;
                 $text   = 0;
-                if (preg_match_all('#<\s*(?:input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm', $form, $fields)) {
+                if (preg_match_all($regexFields, $form, $fields)) {
                     foreach ($fields[1] as $fieldType) {
                         $submit += $fieldType == 'submit' ? 1 : 0;
-                        $text   += $fieldType != 'hidden' ? 1 : 0;
+                        $text += $fieldType != 'hidden' ? 1 : 0;
                     }
                 }
                 if ($text > 1 || $submit > 0) {
