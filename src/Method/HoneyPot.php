@@ -117,8 +117,6 @@ class HoneyPot extends AbstractMethod
     {
         foreach (array_keys($this->honeyPots) as $idx => $name) {
             if (stripos($form, $name) === false) {
-                preg_match('#<\s*/\s*head\s*>#', $body, $headTag);
-                $headTag = array_pop($headTag);
                 $secret  = $this->getHashedFieldName();
 
                 $now      = time();
@@ -129,6 +127,9 @@ class HoneyPot extends AbstractMethod
                     $body = str_replace($form, $replace, $body);
 
                     if (!$this->honeyPots[$name]) {
+                        preg_match('#<\s*/\s*head\s*>#', $body, $headTag);
+                        $headTag = array_pop($headTag);
+
                         $css  = '<style type="text/css">input[name=' . $name . '] {display: none;}</style>';
                         $body = str_replace($headTag, "\n" . $css . "\n" . $headTag, $body);
                     }
