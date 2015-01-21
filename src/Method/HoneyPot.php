@@ -169,10 +169,20 @@ class HoneyPot extends AbstractMethod
         $regex = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
         if (preg_match_all($regex, $text, $matches)) {
             foreach ($matches[0] as $idx => $form) {
-                $forms[] = (object)array(
-                    'source' => $form,
-                    'endTag' => $matches[2][$idx]
-                );
+                $submit = 0;
+                $text   = 0;
+                if (preg_match_all('#<\s*(?:input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm', $form, $fields)) {
+                    foreach ($fields[1] as $fieldType) {
+                        $submit += $fieldType == 'submit' ? 1 : 0;
+                        $text   += $fieldType != 'hidden' ? 1 : 0;
+                    }
+                }
+                if ($text > 1 || $submit > 0) {
+                    $forms[] = (object)array(
+                        'source' => $form,
+                        'endTag' => $matches[2][$idx]
+                    );
+                }
             }
         }
         return $forms;
