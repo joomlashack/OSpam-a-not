@@ -2,12 +2,12 @@
 <extension version="2.5" type="plugin" group="system" method="upgrade">
     <name>plg_system_ospamanot</name>
     <author>Alledia</author>
-    <creationDate>January 21 2015</creationDate>
+    <creationDate>January 23 2015</creationDate>
     <copyright>Copyright (C) 2015 Alledia.com</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>hello@alledia.com</authorEmail>
     <authorUrl>http://www.alledia.com</authorUrl>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <description>PLG_SYSTEM_OSPAMANOT_DESCRIPTION</description>
 
     <alledia>

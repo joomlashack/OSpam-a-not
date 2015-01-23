@@ -14,4 +14,18 @@ require_once 'library/Installer/include.php';
 
 class plgsystemospamanotInstallerScript extends AbstractScript
 {
+    /**
+     * @param string                     $type
+     * @param JInstallerAdapterComponent $parent
+     *
+     * @return void
+     */
+    public function postFlight($type, $parent)
+    {
+        parent::postFlight($type, $parent);
+
+        if (stripos($type, 'install') === false) {
+            $this->reorderThisPlugin();
+        }
+    }
 }
