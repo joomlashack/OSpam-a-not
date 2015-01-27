@@ -64,8 +64,6 @@ class PlgSystemOspamanot extends AbstractPlugin
 
                     $method = new $className($subject, $config);
                     $subject->attach($method);
-                } else {
-                    die($className);
                 }
             }
         }
