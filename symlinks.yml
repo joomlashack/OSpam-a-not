@@ -1,8 +1,8 @@
 mkdir:
     - plugins/system/ospam-a-not
 symlinks:
-    - src/ospam-a-not.xml: plugins/content/ospam-a-not/ospam-a-not.xml
-    - src/ospam-a-not.php: plugins/content/ospam-a-not/ospam-a-not.php
-    - src/include.php: plugins/content/ospam-a-not/include.php
-    - src/style.css: plugins/content/ospam-a-not/style.css
-    - src/language: plugins/content/ospam-a-not/language
+    - src/ospam-a-not.xml: plugins/system/ospam-a-not/ospam-a-not.xml
+    - src/ospam-a-not.php: plugins/system/ospam-a-not/ospam-a-not.php
+    - src/include.php: plugins/system/ospam-a-not/include.php
+    - src/style.css: plugins/system/ospam-a-not/style.css
+    - src/language: plugins/system/ospam-a-not/language
