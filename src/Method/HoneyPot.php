@@ -177,7 +177,7 @@ class HoneyPot extends AbstractMethod
                     foreach ($fields[1] as $fdx => $field) {
                         $fieldType = $fields[2][$fdx];
 
-                        if ($fieldType == 'submit' || $field == 'button') {
+                        if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
                             $submit++;
                         } elseif ($fieldType == 'text') {
                             $text++;
