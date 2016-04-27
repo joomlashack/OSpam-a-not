@@ -7,7 +7,7 @@
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>support@alledia.com</authorEmail>
     <authorUrl>http://www.alledia.com</authorUrl>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <description>PLG_SYSTEM_OSPAMANOT_DESCRIPTION</description>
 
     <alledia>
@@ -29,6 +29,12 @@
     </alledia>
 
     <scriptfile>script.installer.php</scriptfile>
+
+    <media destination="plg_system_ospamanot" folder="media">
+        <folder>css</folder>
+        <folder>images</folder>
+    </media>
+
 
     <files>
         <folder>language</folder>
