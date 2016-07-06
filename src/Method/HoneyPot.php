@@ -48,15 +48,20 @@ class HoneyPot extends AbstractMethod
             $secret = $this->getHashedFieldName();
 
             if (array_key_exists($secret, $_REQUEST)) {
-                $timeKey = $app->input->get($secret);
+                $failedTest = '***';
+                $timeKey    = $app->input->get($secret);
 
                 if (preg_match('/^\d+\.\d$/', $timeKey)) {
                     // timeGate field looks reasonable, find load time and honey pot index
                     list($startTime, $idx) = explode('.', $timeKey);
 
                     $timeGate = (float)$this->params->get('timeGate', 0);
-                    if (!$timeGate || (time() - $startTime) > $timeGate) {
-                        // timeGate test ignored or passed
+                    if ($timeGate && (time() - $startTime) > $timeGate) {
+                        // Failed timeGate
+                        $failedTest = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
+
+                    } else {
+                        // Check the honey pot
                         $nameList = array_keys($this->honeyPots);
                         if (array_key_exists($idx, $nameList)) {
                             $honeyPot = $nameList[$idx];
@@ -65,11 +70,14 @@ class HoneyPot extends AbstractMethod
                                 return;
                             }
                         }
+
+                        // Failed the honey pot test
+                        $failedTest = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
                     }
                 }
 
                 // Failed timeGate/HoneyPot tests
-                $this->block(JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM'));
+                $this->block($failedTest);
             }
 
             // @TODO: does it make sense to consider an unprotected form as a hack attempt?
@@ -117,7 +125,7 @@ class HoneyPot extends AbstractMethod
     {
         foreach (array_keys($this->honeyPots) as $idx => $name) {
             if (stripos($form, $name) === false) {
-                $secret  = $this->getHashedFieldName();
+                $secret = $this->getHashedFieldName();
 
                 $now      = time();
                 $honeyPot = "<input type=\"text\" name=\"{$name}\" value=\"\"/>";

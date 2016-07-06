@@ -53,6 +53,17 @@
                     type="text"
                     label="PLG_SYSTEM_OSPAMANOT_TIMEGATE_LABEL"
                     description="PLG_SYSTEM_OSPAMANOT_TIMEGATE_DESC"/>
+
+                <field
+                    name="logging"
+                    type="radio"
+                    label="PLG_SYSTEM_OSPAMANOT_LOGGING_LABEL"
+                    description="PLG_SYSTEM_OSPAMANOT_LOGGING_DESC"
+                    class="btn-group btn-group-yesno"
+                    default="0">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
             </fieldset>
         </fields>
     </config>
