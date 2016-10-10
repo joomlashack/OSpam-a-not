@@ -1,5 +1,5 @@
 {
-    "name"             : "alledia/ospamanot",
+    "name"             : "joomlashack/ospamanot",
     "description"      : "OSpam-a-not",
     "minimum-stability": "stable",
     "license"          : "GPL-2+",
@@ -14,8 +14,8 @@
     },
     "authors"          : [
         {
-            "name" : "Alledia",
-            "email": "support@alledia.com"
+            "name" : "Joomlashack",
+            "email": "help@joomlashack.com"
         }
     ],
     "require"          : {
