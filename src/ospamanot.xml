@@ -26,12 +26,15 @@
                 publish="true"
                 ordering="first">OSSystem</extension>
         </relatedExtensions>
+
+        <include>AllediaFreeDefaultFiles</include>
     </alledia>
 
     <scriptfile>script.installer.php</scriptfile>
 
     <media destination="plg_system_ospamanot" folder="media">
         <folder>css</folder>
+        <folder>js</folder>
         <folder>images</folder>
     </media>
 
@@ -47,7 +50,9 @@
 
     <config>
         <fields name="params">
-            <fieldset name="basic">
+            <fieldset name="basic"
+                addfieldpath="/plugins/content/osvimeo/form/fields/">
+
                 <field
                     name="timeGate"
                     type="text"
@@ -64,6 +69,13 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+
+                <field
+                    type="customfooter"
+                    name="customfooter"
+                    media="plg_content_osvimeo"
+                    showgoproad="0"
+                    jedurl="https://extensions.joomla.org/extension/ospam-a-not" />
             </fieldset>
         </fields>
     </config>
