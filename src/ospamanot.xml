@@ -51,7 +51,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic"
-                addfieldpath="/plugins/content/osvimeo/form/fields/">
+                addfieldpath="/plugins/system/ospamanot/form/fields/">
 
                 <field
                     name="timeGate"
@@ -73,7 +73,7 @@
                 <field
                     type="customfooter"
                     name="customfooter"
-                    media="plg_content_osvimeo"
+                    media="plg_system_ospamanot"
                     showgoproad="0"
                     jedurl="https://extensions.joomla.org/extension/ospam-a-not" />
             </fieldset>
