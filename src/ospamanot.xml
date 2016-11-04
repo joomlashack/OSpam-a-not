@@ -44,6 +44,7 @@
         <folder>Method</folder>
         <folder>library</folder>
         <folder>views</folder>
+        <folder>form</folder>
         <filename plugin="ospamanot">ospamanot.php</filename>
         <filename>include.php</filename>
     </files>
