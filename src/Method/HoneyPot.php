@@ -56,7 +56,7 @@ class HoneyPot extends AbstractMethod
                     list($startTime, $idx) = explode('.', $timeKey);
 
                     $timeGate = (float)$this->params->get('timeGate', 0);
-                    if ($timeGate && (time() - $startTime) > $timeGate) {
+                    if ($timeGate && (time() - $startTime) < $timeGate) {
                         // Failed timeGate
                         $failedTest = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
 
