@@ -138,7 +138,7 @@ class HoneyPot extends AbstractMethod
                         preg_match('#<\s*/\s*head\s*>#', $body, $headTag);
                         $headTag = array_pop($headTag);
 
-                        $css  = '<style type="text/css">input[name=' . $name . '] {display: none;}</style>';
+                        $css  = '<style type="text/css">input[name=' . $name . '] {display: none !important;}</style>';
                         $body = str_replace($headTag, "\n" . $css . "\n" . $headTag, $body);
                     }
                     $this->honeyPots[$name]++;
