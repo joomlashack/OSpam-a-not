@@ -97,15 +97,14 @@ class HoneyPot extends AbstractMethod
 
             if ($doc->getType() == 'html') {
                 $app = JFactory::getApplication();
-                $j2  = !method_exists($app, 'getBody');
 
-                $body = $j2 ? \JResponse::getBody() : $app->getBody();
+                $body = $app->getBody();
 
                 if ($forms = $this->findForms($body)) {
                     foreach ($forms as $idx => $form) {
                         $this->addHiddenFields($body, $form->source, $form->endTag);
                     }
-                    $j2 ? \JResponse::setBody($body) : $app->setBody($body);
+                    $app->setBody($body);
                 }
 
             }
