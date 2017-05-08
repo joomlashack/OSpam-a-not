@@ -34,7 +34,7 @@ class PlgSystemOspamanot extends AbstractPlugin
         $this->loadLanguage();
 
         // We only care about guest users on the frontend right now
-        if (JFactory::getApplication()->isSite()) {
+        if (JFactory::getApplication()->isClient('site')) {
             $this->registerMethods($subject, $config);
         }
     }
