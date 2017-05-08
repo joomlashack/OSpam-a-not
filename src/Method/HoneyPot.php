@@ -67,6 +67,7 @@ class HoneyPot extends AbstractMethod
                             $honeyPot = $nameList[$idx];
                             if (isset($_REQUEST[$honeyPot]) && !$app->input->get($honeyPot)) {
                                 // Honey pot passed
+                                $this->checkUrl(array($secret, $honeyPot));
                                 return;
                             }
                         }

@@ -68,4 +68,27 @@ abstract class AbstractMethod extends AbstractPlugin
                 throw new Exception($message, 403);
         }
     }
+
+    /**
+     * Check the current url for fields that might have been improperly
+     * introduced in the URL and remove if present
+     *
+     * @param string[] $fields
+     *
+     * @return void
+     */
+    protected function checkUrl(array $fields)
+    {
+        $uri   = \JUri::getInstance();
+        $query = $uri->getQuery(true);
+        foreach ($fields as $field) {
+            if (isset($query[$field])) {
+                $uri->delVar($field);
+            }
+        }
+
+        if ($query != $uri->getQuery(true)) {
+            JFactory::getApplication()->redirect($uri);
+        }
+    }
 }
