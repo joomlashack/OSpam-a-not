@@ -14,9 +14,11 @@ define('OSPAMANOT_PLUGIN_PATH', __DIR__);
 if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
     $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
 
-    if (!file_exists($allediaFrameworkPath)) {
-        throw new Exception('Alledia framework not found');
-    }
+    if (file_exists($allediaFrameworkPath)) {
+        require_once $allediaFrameworkPath;
 
-    require_once $allediaFrameworkPath;
+    } else {
+        JFactory::getApplication()
+            ->enqueueMessage('[Joomlashack OSpam-a-not] Joomlashack Framework not found', 'error');
+    }
 }
