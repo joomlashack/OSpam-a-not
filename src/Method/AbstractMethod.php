@@ -34,8 +34,10 @@ abstract class AbstractMethod extends AbstractPlugin
         $caller = array();
         $method = null;
         if (!empty($stack[1]['class'])) {
-            $caller[] = array_pop(explode('\\', $stack[1]['class']));
+            $classParts = explode('\\', $stack[1]['class']);
+            $caller[] = array_pop($classParts);
         }
+
         if (!empty($stack[1]['function'])) {
             $caller[] = $stack[1]['function'];
             $method   = $stack[1]['function'];
