@@ -21,6 +21,11 @@ defined('_JEXEC') or die();
 abstract class AbstractMethod extends AbstractPlugin
 {
     /**
+     * @var array
+     */
+    protected $forms = null;
+
+    /**
      * Standard response for use by subclasses that want to block the user for any reason
      *
      * @param string $testName
@@ -35,7 +40,7 @@ abstract class AbstractMethod extends AbstractPlugin
         $method = null;
         if (!empty($stack[1]['class'])) {
             $classParts = explode('\\', $stack[1]['class']);
-            $caller[] = array_pop($classParts);
+            $caller[]   = array_pop($classParts);
         }
 
         if (!empty($stack[1]['function'])) {
@@ -78,6 +83,7 @@ abstract class AbstractMethod extends AbstractPlugin
      * @param string[] $fields
      *
      * @return void
+     * @throws Exception
      */
     protected function checkUrl(array $fields)
     {
@@ -92,5 +98,49 @@ abstract class AbstractMethod extends AbstractPlugin
         if ($query != $uri->getQuery(true)) {
             JFactory::getApplication()->redirect($uri);
         }
+    }
+
+    /**
+     * Find all candidate forms for spam protection
+     *
+     * @param $text
+     *
+     * @return array
+     */
+    protected function findForms($text)
+    {
+        if ($this->forms === null) {
+            $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
+            $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
+
+            $this->forms = array();
+            if (preg_match_all($regexForm, $text, $matches)) {
+                foreach ($matches[0] as $idx => $form) {
+                    $submit = 0;
+                    $text   = 0;
+                    if (preg_match_all($regexFields, $form, $fields)) {
+                        foreach ($fields[1] as $fdx => $field) {
+                            $fieldType = $fields[2][$fdx];
+
+                            if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
+                                $submit++;
+                            } elseif ($fieldType == 'text') {
+                                $text++;
+                            }
+                        }
+                    }
+
+                    // Include form only if adding another text field won't break it
+                    if ($text > 1 || $submit > 0) {
+                        $this->forms[] = (object)array(
+                            'source' => $form,
+                            'endTag' => $matches[2][$idx]
+                        );
+                    }
+                }
+            }
+        }
+
+        return $this->forms;
     }
 }

@@ -163,45 +163,4 @@ class HoneyPot extends AbstractMethod
 
         return md5($siteName . $secret);
     }
-
-    /**
-     * Find all candidate forms for spam protection
-     *
-     * @param $text
-     *
-     * @return array
-     */
-    protected function findForms($text)
-    {
-        $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
-        $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
-
-        $forms = array();
-        if (preg_match_all($regexForm, $text, $matches)) {
-            foreach ($matches[0] as $idx => $form) {
-                $submit = 0;
-                $text   = 0;
-                if (preg_match_all($regexFields, $form, $fields)) {
-                    foreach ($fields[1] as $fdx => $field) {
-                        $fieldType = $fields[2][$fdx];
-
-                        if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
-                            $submit++;
-                        } elseif ($fieldType == 'text') {
-                            $text++;
-                        }
-                    }
-                }
-
-                // Include form only if adding another text field won't break it
-                if ($text > 1 || $submit > 0) {
-                    $forms[] = (object)array(
-                        'source' => $form,
-                        'endTag' => $matches[2][$idx]
-                    );
-                }
-            }
-        }
-        return $forms;
-    }
 }
