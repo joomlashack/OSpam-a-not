@@ -2,12 +2,12 @@
 <extension version="3.7" type="plugin" group="system" method="upgrade">
     <name>plg_system_ospamanot</name>
     <author>Joomlashack</author>
-    <creationDate>January 21 2019</creationDate>
+    <creationDate>February 20 2019</creationDate>
     <copyright>Copyright (C) 2015-2019 Open Source Training, LLC</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>help@joomlashack.com</authorEmail>
     <authorUrl>http://www.joomlashack.com</authorUrl>
-    <version>1.1.11</version>
+    <version>1.1.12</version>
     <description>PLG_SYSTEM_OSPAMANOT_DESCRIPTION</description>
 
     <alledia>
