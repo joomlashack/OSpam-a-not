@@ -10,7 +10,9 @@
         "name"           : "OSpam-a-not",
         "folder"         : "system",
         "client"         : "site",
-        "package-license": "free"
+        "package-license": "free",
+        "target-platform": "3.*",
+        "infourl"        : "/changelog/ospam-a-not/"
     },
     "authors"          : [
         {
