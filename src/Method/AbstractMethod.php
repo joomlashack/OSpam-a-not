@@ -73,21 +73,22 @@ abstract class AbstractMethod extends AbstractPlugin
             JLog::add(join('::', $caller), JLog::NOTICE, $testName);
         }
 
-        switch (strtolower($method)) {
-            case 'onafterinitialise':
-            case 'onafterroute':
-            case 'onafterrender':
-                $app = JFactory::getApplication();
+        if (JFactory::getDocument()->getType() == 'html') {
+            switch (strtolower($method)) {
+                case 'onafterinitialise':
+                case 'onafterroute':
+                case 'onafterrender':
+                    $app = JFactory::getApplication();
 
-                $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: JRoute::_('index.php');
+                    $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: JRoute::_('index.php');
 
-                $app->enqueueMessage($message, 'error');
-                $app->redirect(JRoute::_($link));
-                break;
-
-            default:
-                throw new Exception($message, 403);
+                    $app->enqueueMessage($message, 'error');
+                    $app->redirect(JRoute::_($link));
+                    return;
+            }
         }
+
+        throw new Exception($message, 403);
     }
 
     /**
