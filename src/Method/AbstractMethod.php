@@ -47,6 +47,19 @@ abstract class AbstractMethod extends AbstractPlugin
     protected $app = null;
 
     /**
+     * @var string[] HTML5 text fields
+     */
+    protected $textFields = [
+        'email',
+        'number',
+        'password',
+        'search',
+        'tel',
+        'text',
+        'url'
+    ];
+
+    /**
      * Standard response for use by subclasses that want to block the user for any reason
      *
      * @param string $testName
@@ -143,7 +156,8 @@ abstract class AbstractMethod extends AbstractPlugin
 
                             if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
                                 $submit++;
-                            } elseif ($fieldType == 'text') {
+
+                            } elseif (in_array($fieldType, $this->textFields)) {
                                 $text++;
                             }
                         }
