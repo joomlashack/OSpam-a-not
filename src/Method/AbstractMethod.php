@@ -149,7 +149,12 @@ abstract class AbstractMethod extends AbstractPlugin
                         }
                     }
 
-                    // Include form only if adding another text field won't break it
+                    /*
+                     * If a form has only one text field and no submit button,
+                     * the form can be submitted by pressing enter/return key.
+                     * Modifying the form for our purposes will break that
+                     * behavior
+                     */
                     if ($text > 1 || $submit > 0) {
                         $this->forms[] = (object)array(
                             'source' => $form,
