@@ -25,10 +25,12 @@ namespace Alledia\PlgSystemOspamanot\Method;
 
 use Alledia\Framework\Factory;
 use Exception;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die();
 
@@ -40,12 +42,17 @@ abstract class AbstractMethod extends AbstractPlugin
     protected $forms = null;
 
     /**
+     * @var CMSApplication
+     */
+    protected $app = null;
+
+    /**
      * Standard response for use by subclasses that want to block the user for any reason
      *
      * @param string $testName
      *
-     * @throws \Exception
      * @return void
+     * @throws Exception
      */
     protected function block($testName = null)
     {
@@ -78,12 +85,10 @@ abstract class AbstractMethod extends AbstractPlugin
                 case 'onafterinitialise':
                 case 'onafterroute':
                 case 'onafterrender':
-                    $app = Factory::getApplication();
+                    $link = $this->app->input->server->get('HTTP_REFERER', '', 'URL') ?: Route::_('index.php');
 
-                    $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: Route::_('index.php');
-
-                    $app->enqueueMessage($message, 'error');
-                    $app->redirect(Route::_($link));
+                    $this->app->enqueueMessage($message, 'error');
+                    $this->app->redirect(Route::_($link));
                     return;
             }
         }
@@ -98,11 +103,10 @@ abstract class AbstractMethod extends AbstractPlugin
      * @param string[] $fields
      *
      * @return void
-     * @throws Exception
      */
     protected function checkUrl(array $fields)
     {
-        $uri   = \JUri::getInstance();
+        $uri   = Uri::getInstance();
         $query = $uri->getQuery(true);
         foreach ($fields as $field) {
             if (isset($query[$field])) {
@@ -111,7 +115,7 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($query != $uri->getQuery(true)) {
-            Factory::getApplication()->redirect($uri);
+            $this->app->redirect($uri);
         }
     }
 

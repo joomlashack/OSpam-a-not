@@ -51,19 +51,17 @@ class HoneyPot extends AbstractMethod
     /**
      * Check the timeGate/Honeypot fields if they exist
      *
-     * @throws Exception
      * @return void
+     * @throws Exception
      */
     public function onAfterInitialise()
     {
-        $app = Factory::getApplication();
-
-        if (in_array($app->input->getMethod(), array('GET', 'POST'))) {
+        if (in_array($this->app->input->getMethod(), array('GET', 'POST'))) {
             $secret = $this->getHashedFieldName();
 
             if (array_key_exists($secret, $_REQUEST)) {
                 $failedTest = '***';
-                $timeKey    = $app->input->get($secret);
+                $timeKey    = $this->app->input->get($secret);
 
                 if (preg_match('/^\d+\.\d$/', $timeKey)) {
                     // timeGate field looks reasonable, find load time and honey pot index
@@ -102,7 +100,6 @@ class HoneyPot extends AbstractMethod
     /**
      * if not logged in on an html page, add the timeGate/Honeypot fields to any forms found
      *
-     * @throws Exception
      * @return void
      */
     public function onAfterRender()
@@ -111,17 +108,14 @@ class HoneyPot extends AbstractMethod
             $doc = Factory::getDocument();
 
             if ($doc->getType() == 'html') {
-                $app = Factory::getApplication();
-
-                $body = $app->getBody();
+                $body = $this->app->getBody();
 
                 if ($forms = $this->findForms($body)) {
                     foreach ($forms as $idx => $form) {
                         $this->addHiddenFields($body, $form->source, $form->endTag);
                     }
-                    $app->setBody($body);
+                    $this->app->setBody($body);
                 }
-
             }
         }
     }
@@ -142,9 +136,10 @@ class HoneyPot extends AbstractMethod
                 $secret = $this->getHashedFieldName();
 
                 $now      = time();
-                $honeyPot = "<input type=\"text\" name=\"{$name}\" value=\"\"/>";
-                $timeGate = "<input type=\"hidden\" name=\"{$secret}\" value=\"{$now}.{$idx}\"/>";
+                $honeyPot = sprintf('<input type="text" name="%s" value=""/>', $name);
+                $timeGate = sprintf('<input type="hidden" name="%s" value="%s"/>', $secret, $now . $idx);
                 $replace  = str_replace($endTag, $honeyPot . $timeGate . $endTag, $form);
+
                 if ($replace != $form) {
                     $body = str_replace($form, $replace, $body);
 
@@ -152,7 +147,10 @@ class HoneyPot extends AbstractMethod
                         preg_match('#<\s*/\s*head\s*>#', $body, $headTag);
                         $headTag = array_pop($headTag);
 
-                        $css  = '<style type="text/css">input[name=' . $name . '] {display: none !important;}</style>';
+                        $css  = sprintf(
+                            '<style type="text/css">input[name=\'%s\'] {display: none !important;}</style>',
+                            $name
+                        );
                         $body = str_replace($headTag, "\n" . $css . "\n" . $headTag, $body);
                     }
                     $this->honeyPots[$name]++;
