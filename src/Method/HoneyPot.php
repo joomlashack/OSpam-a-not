@@ -23,9 +23,9 @@
 
 namespace Alledia\PlgSystemOspamanot\Method;
 
-use \Exception;
-use \JFactory;
-use \JText;
+use Alledia\Framework\Factory;
+use Exception;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die();
 
@@ -56,7 +56,7 @@ class HoneyPot extends AbstractMethod
      */
     public function onAfterInitialise()
     {
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
 
         if (in_array($app->input->getMethod(), array('GET', 'POST'))) {
             $secret = $this->getHashedFieldName();
@@ -72,7 +72,7 @@ class HoneyPot extends AbstractMethod
                     $timeGate = (float)$this->params->get('timeGate', 0);
                     if ($timeGate && (time() - $startTime) < $timeGate) {
                         // Failed timeGate
-                        $failedTest = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
+                        $failedTest = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
 
                     } else {
                         // Check the honey pot
@@ -87,7 +87,7 @@ class HoneyPot extends AbstractMethod
                         }
 
                         // Failed the honey pot test
-                        $failedTest = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
+                        $failedTest = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
                     }
                 }
 
@@ -107,11 +107,11 @@ class HoneyPot extends AbstractMethod
      */
     public function onAfterRender()
     {
-        if (JFactory::getUser()->guest) {
-            $doc = JFactory::getDocument();
+        if (Factory::getUser()->guest) {
+            $doc = Factory::getDocument();
 
             if ($doc->getType() == 'html') {
-                $app = JFactory::getApplication();
+                $app = Factory::getApplication();
 
                 $body = $app->getBody();
 
@@ -170,7 +170,7 @@ class HoneyPot extends AbstractMethod
      */
     protected function getHashedFieldName()
     {
-        $config = JFactory::getConfig();
+        $config = Factory::getConfig();
 
         $siteName = $config->get('sitename');
         $secret   = $config->get('secret');

@@ -23,12 +23,12 @@
 
 namespace Alledia\PlgSystemOspamanot\Method;
 
+use Alledia\Framework\Factory;
 use Exception;
-use JFactory;
-use JLog;
-use JRoute;
-use JText;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Joomla\CMS\Router\Route;
 
 defined('_JEXEC') or die();
 
@@ -63,27 +63,27 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if (!$testName) {
-            $message = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
+            $message = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
         } else {
-            $message = JText::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
+            $message = Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
         }
 
         if ($this->params->get('logging', 0)) {
-            JLog::addLogger(array('text_file' => 'ospamanot.log.php'), JLog::ALL);
-            JLog::add(join('::', $caller), JLog::NOTICE, $testName);
+            Log::addLogger(array('text_file' => 'ospamanot.log.php'), Log::ALL);
+            Log::add(join('::', $caller), Log::NOTICE, $testName);
         }
 
-        if (JFactory::getDocument()->getType() == 'html') {
+        if (Factory::getDocument()->getType() == 'html') {
             switch (strtolower($method)) {
                 case 'onafterinitialise':
                 case 'onafterroute':
                 case 'onafterrender':
-                    $app = JFactory::getApplication();
+                    $app = Factory::getApplication();
 
-                    $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: JRoute::_('index.php');
+                    $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: Route::_('index.php');
 
                     $app->enqueueMessage($message, 'error');
-                    $app->redirect(JRoute::_($link));
+                    $app->redirect(Route::_($link));
                     return;
             }
         }
@@ -111,7 +111,7 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($query != $uri->getQuery(true)) {
-            JFactory::getApplication()->redirect($uri);
+            Factory::getApplication()->redirect($uri);
         }
     }
 

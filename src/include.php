@@ -21,6 +21,8 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die();
 
 define('OSPAMANOT_PLUGIN_PATH', __DIR__);
@@ -33,7 +35,7 @@ if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
         require_once $allediaFrameworkPath;
 
     } else {
-        JFactory::getApplication()
+        Factory::getApplication()
             ->enqueueMessage('[Joomlashack OSpam-a-not] Joomlashack Framework not found', 'error');
     }
 }
