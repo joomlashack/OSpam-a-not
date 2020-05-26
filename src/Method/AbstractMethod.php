@@ -2,7 +2,7 @@
 /**
  * @package   OSpam-a-not
  * @contact   www.joomlashack.com, help@joomlashack.com
- * @copyright 2015-2019 Joomlashack.com. All rights reserved
+ * @copyright 2015-2020 Joomlashack.com. All rights reserved
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  *
  * This file is part of OSpam-a-not.
@@ -23,12 +23,14 @@
 
 namespace Alledia\PlgSystemOspamanot\Method;
 
+use Alledia\Framework\Factory;
 use Exception;
-use JFactory;
-use JLog;
-use JRoute;
-use JText;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die();
 
@@ -40,12 +42,30 @@ abstract class AbstractMethod extends AbstractPlugin
     protected $forms = null;
 
     /**
+     * @var CMSApplication
+     */
+    protected $app = null;
+
+    /**
+     * @var string[] HTML5 text fields
+     */
+    protected $textFields = [
+        'email',
+        'number',
+        'password',
+        'search',
+        'tel',
+        'text',
+        'url'
+    ];
+
+    /**
      * Standard response for use by subclasses that want to block the user for any reason
      *
      * @param string $testName
      *
-     * @throws \Exception
      * @return void
+     * @throws Exception
      */
     protected function block($testName = null)
     {
@@ -63,27 +83,25 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if (!$testName) {
-            $message = JText::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
+            $message = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
         } else {
-            $message = JText::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
+            $message = Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
         }
 
         if ($this->params->get('logging', 0)) {
-            JLog::addLogger(array('text_file' => 'ospamanot.log.php'), JLog::ALL);
-            JLog::add(join('::', $caller), JLog::NOTICE, $testName);
+            Log::addLogger(array('text_file' => 'ospamanot.log.php'), Log::ALL);
+            Log::add(join('::', $caller), Log::NOTICE, $testName);
         }
 
-        if (JFactory::getDocument()->getType() == 'html') {
+        if (Factory::getDocument()->getType() == 'html') {
             switch (strtolower($method)) {
                 case 'onafterinitialise':
                 case 'onafterroute':
                 case 'onafterrender':
-                    $app = JFactory::getApplication();
+                    $link = $this->app->input->server->get('HTTP_REFERER', '', 'URL') ?: Route::_('index.php');
 
-                    $link = $app->input->server->get('HTTP_REFERER', '', 'URL') ?: JRoute::_('index.php');
-
-                    $app->enqueueMessage($message, 'error');
-                    $app->redirect(JRoute::_($link));
+                    $this->app->enqueueMessage($message, 'error');
+                    $this->app->redirect(Route::_($link));
                     return;
             }
         }
@@ -98,11 +116,10 @@ abstract class AbstractMethod extends AbstractPlugin
      * @param string[] $fields
      *
      * @return void
-     * @throws Exception
      */
     protected function checkUrl(array $fields)
     {
-        $uri   = \JUri::getInstance();
+        $uri   = Uri::getInstance();
         $query = $uri->getQuery(true);
         foreach ($fields as $field) {
             if (isset($query[$field])) {
@@ -111,7 +128,7 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($query != $uri->getQuery(true)) {
-            JFactory::getApplication()->redirect($uri);
+            $this->app->redirect($uri);
         }
     }
 
@@ -139,13 +156,19 @@ abstract class AbstractMethod extends AbstractPlugin
 
                             if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
                                 $submit++;
-                            } elseif ($fieldType == 'text') {
+
+                            } elseif (in_array($fieldType, $this->textFields)) {
                                 $text++;
                             }
                         }
                     }
 
-                    // Include form only if adding another text field won't break it
+                    /*
+                     * If a form has only one text field and no submit button,
+                     * the form can be submitted by pressing enter/return key.
+                     * Modifying the form for our purposes will break that
+                     * behavior
+                     */
                     if ($text > 1 || $submit > 0) {
                         $this->forms[] = (object)array(
                             'source' => $form,

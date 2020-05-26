@@ -2,7 +2,7 @@
 /**
  * @package   OSpam-a-not
  * @contact   www.joomlashack.com, help@joomlashack.com
- * @copyright 2015-2019 Joomlashack.com. All rights reserved
+ * @copyright 2015-2020 Joomlashack.com. All rights reserved
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  *
  * This file is part of OSpam-a-not.
@@ -22,6 +22,9 @@
  */
 
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\Folder;
 
 defined('_JEXEC') or die();
 
@@ -39,6 +42,13 @@ if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
          */
         protected $namespace = 'Ospamanot';
 
+        protected $autoloadLanguage = true;
+
+        /**
+         * @var CMSApplication
+         */
+        protected $app = null;
+
         /**
          * @param JEventDispatcher $subject
          * @param array            $config
@@ -50,10 +60,8 @@ if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
         {
             parent::__construct($subject, $config);
 
-            $this->loadLanguage();
-
             // We only care about guest users on the frontend right now
-            if (JFactory::getApplication()->isClient('site')) {
+            if (Factory::getApplication()->isClient('site')) {
                 $this->registerMethods($subject, $config);
             }
         }
@@ -66,11 +74,10 @@ if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
          */
         protected function registerMethods($subject, $config)
         {
-            jimport('joomla.filesystem.folder');
-
             $path      = __DIR__ . '/Method';
             $baseClass = $path . '/AbstractMethod.php';
-            if (is_file($baseClass) && $methods = JFolder::files($path, '^(?!AbstractMethod).*\.php$', false, true)) {
+
+            if (is_file($baseClass) && $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$', false, true)) {
                 require_once $baseClass;
 
                 foreach ($methods as $path) {

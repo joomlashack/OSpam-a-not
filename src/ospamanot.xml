@@ -2,13 +2,14 @@
 <extension version="3.7" type="plugin" group="system" method="upgrade">
     <name>plg_system_ospamanot</name>
     <author>Joomlashack</author>
-    <creationDate>July 24 2019</creationDate>
-    <copyright>Copyright (C) 2015-2019 Open Source Training, LLC</copyright>
-    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>help@joomlashack.com</authorEmail>
-    <authorUrl>http://www.joomlashack.com</authorUrl>
-    <version>1.1.13</version>
+    <authorUrl>https://www.joomlashack.com/</authorUrl>
+    <copyright>Copyright 2015-2020 Joomlashack. All rights reserved.</copyright>
+    <license>GNU GPL; see LICENSE file</license>
     <description>PLG_SYSTEM_OSPAMANOT_DESCRIPTION</description>
+    <version>1.1.14</version>
+    <creationDate>May 26 2020</creationDate>
+    <variant>FREE</variant>
 
     <alledia>
         <element publish="true" ordering="last">ospamanot</element>
