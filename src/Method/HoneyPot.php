@@ -131,7 +131,13 @@ class HoneyPot extends AbstractMethod
      */
     protected function addHiddenFields(&$body, $form, $endTag)
     {
-        foreach (array_keys($this->honeyPots) as $idx => $name) {
+        $numbers = range(0, count($this->honeyPots) - 1);
+        shuffle($numbers);
+
+        foreach ($numbers as $idx) {
+            $name = array_slice(array_keys($this->honeyPots), $idx, 1);
+            $name = array_pop($name);
+
             if (stripos($form, $name) === false) {
                 $secret = $this->getHashedFieldName();
 
@@ -159,6 +165,8 @@ class HoneyPot extends AbstractMethod
                 return;
             }
         }
+
+        // Honeypot was not added
     }
 
     /**
