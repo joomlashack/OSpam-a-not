@@ -137,7 +137,7 @@ class HoneyPot extends AbstractMethod
 
                 $now      = time();
                 $honeyPot = sprintf('<input type="text" name="%s" value=""/>', $name);
-                $timeGate = sprintf('<input type="hidden" name="%s" value="%s"/>', $secret, $now . $idx);
+                $timeGate = sprintf('<input type="hidden" name="%s" value="%s.%s"/>', $secret, $now, $idx);
                 $replace  = str_replace($endTag, $honeyPot . $timeGate . $endTag, $form);
 
                 if ($replace != $form) {
