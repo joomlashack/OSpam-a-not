@@ -68,7 +68,7 @@ class HoneyPot extends AbstractMethod
                     // Our secret field was added, check response time
                     $atoms     = explode('.', $timeKey);
                     $startTime = array_shift($atoms);
-                    $idx       = $atoms ? array_unshift($atoms) : null;
+                    $idx       = $atoms ? array_shift($atoms) : null;
 
                     $timeGate = (float)$this->params->get('timeGate', 0);
                     if ($timeGate && (time() - $startTime) < $timeGate) {
