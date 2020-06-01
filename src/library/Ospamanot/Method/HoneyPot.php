@@ -115,9 +115,7 @@ class HoneyPot extends AbstractMethod
 
                 if ($forms = $this->findForms($body)) {
                     foreach ($forms as $idx => $form) {
-                        if ($form->addText) {
-                            $this->addHiddenFields($body, $form);
-                        }
+                        $this->addHiddenFields($body, $form);
                     }
                     $this->app->setBody($body);
                 }
