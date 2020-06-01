@@ -21,7 +21,7 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Alledia\PlgSystemOspamanot\Method;
+namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
 use Exception;

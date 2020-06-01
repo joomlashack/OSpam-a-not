@@ -2,7 +2,7 @@
 /**
  * @package   OSpam-a-not
  * @contact   www.joomlashack.com, help@joomlashack.com
- * @copyright 2015-2020 Joomlashack.com. All rights reserved
+ * @copyright 2020 Joomlashack.com. All rights reserved
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  *
  * This file is part of OSpam-a-not.
@@ -21,27 +21,32 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Alledia\Framework\AutoLoader;
-use Joomla\CMS\Factory;
+namespace Alledia\Ospamanot;
 
 defined('_JEXEC') or die();
 
-if (!defined('OSPAMANOT_ROOT')) {
-    define('OSPAMANOT_ROOT', __DIR__);
+class FormTags
+{
+    /**
+     * @var string
+     */
+    public $source = null;
 
-    if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
-        $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
+    /**
+     * @var string
+     */
+    public $endTag = null;
 
-        if (file_exists($allediaFrameworkPath)) {
-            require_once $allediaFrameworkPath;
+    /**
+     * @var bool
+     */
+    public $addText = false;
 
-        } else {
-            Factory::getApplication()
-                ->enqueueMessage('[Joomlashack OSpam-a-not] Joomlashack Framework not found', 'error');
+    public function __construct($values)
+    {
+        $properties = get_object_vars($this);
+        foreach ($properties as $property => $value) {
+            $this->{$property} = isset($values[$property]) ? $values[$property] : $this->{$property};
         }
-    }
-
-    if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
-        AutoLoader::register('Alledia', __DIR__ . '/library');
     }
 }

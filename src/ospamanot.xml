@@ -39,10 +39,8 @@
         <folder>images</folder>
     </media>
 
-
     <files>
         <folder>language</folder>
-        <folder>Method</folder>
         <folder>library</folder>
         <folder>views</folder>
         <folder>form</folder>
