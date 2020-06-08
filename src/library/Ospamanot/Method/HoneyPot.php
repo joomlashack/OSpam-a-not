@@ -21,9 +21,10 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Alledia\PlgSystemOspamanot\Method;
+namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
+use Alledia\Ospamanot\FormTags;
 use Exception;
 use Joomla\CMS\Language\Text;
 
@@ -60,40 +61,42 @@ class HoneyPot extends AbstractMethod
             $secret = $this->getHashedFieldName();
 
             if (array_key_exists($secret, $_REQUEST)) {
-                $failedTest = '***';
-                $timeKey    = $this->app->input->get($secret);
+                $failMessage = null;
+                $timeKey     = $this->app->input->get($secret);
 
-                if (preg_match('/^\d+\.\d$/', $timeKey)) {
-                    // timeGate field looks reasonable, find load time and honey pot index
-                    list($startTime, $idx) = explode('.', $timeKey);
+                if (preg_match('/^\d+(?:\.\d)?$/', $timeKey)) {
+                    // Our secret field was added, check response time
+                    $atoms     = explode('.', $timeKey);
+                    $startTime = array_shift($atoms);
+                    $idx       = $atoms ? array_shift($atoms) : null;
 
                     $timeGate = (float)$this->params->get('timeGate', 0);
                     if ($timeGate && (time() - $startTime) < $timeGate) {
                         // Failed timeGate
-                        $failedTest = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
+                        $failMessage = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
 
-                    } else {
-                        // Check the honey pot
+                    } elseif ($idx !== null) {
+                        // Honey pot was also added, check it out
                         $nameList = array_keys($this->honeyPots);
+
                         if (array_key_exists($idx, $nameList)) {
                             $honeyPot = $nameList[$idx];
                             if (isset($_REQUEST[$honeyPot]) && $_REQUEST[$honeyPot] === '') {
                                 // Honey pot passed
                                 $this->checkUrl(array($secret, $honeyPot));
-                                return;
+
+                            } else {
+                                // Failed the honey pot
+                                $failMessage = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
                             }
                         }
+                    }
 
-                        // Failed the honey pot test
-                        $failedTest = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
+                    if ($failMessage) {
+                        $this->block($failMessage);
                     }
                 }
-
-                // Failed timeGate/HoneyPot tests
-                $this->block($failedTest);
             }
-
-            // @TODO: does it make sense to consider an unprotected form as a hack attempt?
         }
     }
 
@@ -112,7 +115,7 @@ class HoneyPot extends AbstractMethod
 
                 if ($forms = $this->findForms($body)) {
                     foreach ($forms as $idx => $form) {
-                        $this->addHiddenFields($body, $form->source, $form->endTag);
+                        $this->addHiddenFields($body, $form);
                     }
                     $this->app->setBody($body);
                 }
@@ -123,25 +126,34 @@ class HoneyPot extends AbstractMethod
     /**
      * Adds the timeGate/Honeypot fields and hides them using css in <head> tag
      *
-     * @param string $body
-     * @param string $form
-     * @param string $endTag
+     * @param string   $body
+     * @param FormTags $form
      *
      * @return void
      */
-    protected function addHiddenFields(&$body, $form, $endTag)
+    protected function addHiddenFields(&$body, FormTags $form)
     {
-        foreach (array_keys($this->honeyPots) as $idx => $name) {
-            if (stripos($form, $name) === false) {
+        $numbers = range(0, count($this->honeyPots) - 1);
+        shuffle($numbers);
+
+        foreach ($numbers as $idx) {
+            $name = array_slice(array_keys($this->honeyPots), $idx, 1);
+            $name = array_pop($name);
+
+            if (stripos($form->source, $name) === false) {
                 $secret = $this->getHashedFieldName();
 
-                $now      = time();
-                $honeyPot = sprintf('<input type="text" name="%s" value=""/>', $name);
-                $timeGate = sprintf('<input type="hidden" name="%s" value="%s.%s"/>', $secret, $now, $idx);
-                $replace  = str_replace($endTag, $honeyPot . $timeGate . $endTag, $form);
+                $secretValue = time();
+                $honeyPot    = '';
+                if ($form->addText) {
+                    $secretValue .= '.' . $idx;
+                    $honeyPot    = sprintf('<input type="text" name="%s" value=""/>', $name);
+                }
+                $timeGate = sprintf('<input type="hidden" name="%s" value="%s"/>', $secret, $secretValue);
+                $replace  = str_replace($form->endTag, $honeyPot . $timeGate . $form->endTag, $form->source);
 
-                if ($replace != $form) {
-                    $body = str_replace($form, $replace, $body);
+                if ($replace != $form->source) {
+                    $body = str_replace($form->source, $replace, $body);
 
                     if (!$this->honeyPots[$name]) {
                         preg_match('#<\s*/\s*head\s*>#', $body, $headTag);

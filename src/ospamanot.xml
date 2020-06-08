@@ -7,8 +7,8 @@
     <copyright>Copyright 2015-2020 Joomlashack. All rights reserved.</copyright>
     <license>GNU GPL; see LICENSE file</license>
     <description>PLG_SYSTEM_OSPAMANOT_DESCRIPTION</description>
-    <version>1.1.15</version>
-    <creationDate>May 27 2020</creationDate>
+    <version>1.1.16b4</version>
+    <creationDate>June 03 2020</creationDate>
     <variant>FREE</variant>
 
     <alledia>
@@ -39,10 +39,8 @@
         <folder>images</folder>
     </media>
 
-
     <files>
         <folder>language</folder>
-        <folder>Method</folder>
         <folder>library</folder>
         <folder>views</folder>
         <folder>form</folder>

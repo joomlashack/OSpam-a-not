@@ -21,9 +21,10 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Alledia\PlgSystemOspamanot\Method;
+namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
+use Alledia\Ospamanot\FormTags;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
@@ -37,7 +38,7 @@ defined('_JEXEC') or die();
 abstract class AbstractMethod extends AbstractPlugin
 {
     /**
-     * @var array
+     * @var FormTags[]
      */
     protected $forms = null;
 
@@ -169,12 +170,11 @@ abstract class AbstractMethod extends AbstractPlugin
                      * Modifying the form for our purposes will break that
                      * behavior
                      */
-                    if ($text > 1 || $submit > 0) {
-                        $this->forms[] = (object)array(
-                            'source' => $form,
-                            'endTag' => $matches[2][$idx]
-                        );
-                    }
+                    $this->forms[] = new FormTags([
+                        'source'  => $form,
+                        'endTag'  => $matches[2][$idx],
+                        'addText' => $text > 1 || $submit > 0
+                    ]);
                 }
             }
         }

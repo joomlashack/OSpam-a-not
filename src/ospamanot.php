@@ -22,6 +22,7 @@
  */
 
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\Folder;
@@ -74,23 +75,30 @@ if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
          */
         protected function registerMethods($subject, $config)
         {
-            $path      = __DIR__ . '/Method';
-            $baseClass = $path . '/AbstractMethod.php';
+            try {
+                $classInfo = new ReflectionClass(AbstractMethod::class);
 
-            if (is_file($baseClass) && $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$', false, true)) {
-                require_once $baseClass;
+                $path      = dirname($classInfo->getFileName());
+                $nameSpace = $classInfo->getNamespaceName();
 
-                foreach ($methods as $path) {
-                    $name      = basename($path, '.php');
-                    $className = 'Alledia\\' . __CLASS__ . '\\Method\\' . $name;
+            } catch (Exception $error) {
+                return;
 
-                    require_once $path;
-                    if (class_exists($className)) {
-                        $config['name'] = $this->_name . strtolower($name);
+            } catch (Throwable $error) {
+                return;
+            }
 
-                        $method = new $className($subject, $config);
-                        $subject->attach($method);
-                    }
+            $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$');
+
+            foreach ($methods as $file) {
+                $name      = basename($file, '.php');
+                $className = '\\' . $nameSpace . '\\' . $name;
+
+                if (class_exists($className)) {
+                    $config['name'] = $this->_name . strtolower($name);
+
+                    $method = new $className($subject, $config);
+                    $subject->attach($method);
                 }
             }
         }
