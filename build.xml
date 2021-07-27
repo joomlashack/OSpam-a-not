@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Alledia Extension Builder" default="">
+<project name="Alledia Extension Builder" default="build">
+    <property name="builder.client.version" value="3.16.0"/>
+    <echo message="AllediaBuilder Client Version ${builder.client.version}"/>
+
     <if>
-        <available file="./build.properties" type="file" />
+        <available file="./build.properties" type="file"/>
         <then>
-            <property file="./build.properties" />
+            <property file="./build.properties"/>
         </then>
         <else>
-            <fail message="Missed build.properties file on the project root folder. Duplicate the build.properties.dist file and customize with your settings" />
+            <fail>-
+Missing 'build.properties' file in the project root folder
+            </fail>
         </else>
     </if>
 
-    <fail unless="builder.path" message="Missed builder.path property" />
+    <fail unless="builder.path">-
+Missing 'builder.path' property
+    </fail>
 
-    <import file="${builder.path}/src/build.xml"/>
+    <if>
+        <available file="${builder.path}/src/build.xml" type="file"/>
+        <then>
+            <import file="${builder.path}/src/build.xml"/>
+        </then>
+        <else>
+            <fail>-
+Missing 'build.xml' file in builder source path
+            </fail>
+        </else>
+    </if>
+
+
 </project>
