@@ -71,7 +71,7 @@ abstract class AbstractMethod extends AbstractPlugin
     protected function block($testName = null)
     {
         $stack  = debug_backtrace();
-        $caller = array();
+        $caller = [];
         $method = null;
         if (!empty($stack[1]['class'])) {
             $classParts = explode('\\', $stack[1]['class']);
@@ -90,7 +90,7 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($this->params->get('logging', 0)) {
-            Log::addLogger(array('text_file' => 'ospamanot.log.php'), Log::ALL);
+            Log::addLogger(['text_file' => 'ospamanot.log.php'], Log::ALL);
             Log::add(join('::', $caller), Log::NOTICE, $testName);
         }
 
@@ -146,7 +146,7 @@ abstract class AbstractMethod extends AbstractPlugin
             $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
             $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
 
-            $this->forms = array();
+            $this->forms = [];
             if (preg_match_all($regexForm, $text, $matches)) {
                 foreach ($matches[0] as $idx => $form) {
                     $submit = 0;

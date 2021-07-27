@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.7" type="plugin" group="system" method="upgrade">
+<extension type="plugin" group="system" method="upgrade">
     <name>plg_system_ospamanot</name>
     <author>Joomlashack</author>
     <authorEmail>help@joomlashack.com</authorEmail>
@@ -16,16 +16,14 @@
         <namespace>Ospamanot</namespace>
         <license>free</license>
         <relatedExtensions>
-            <extension
-                type="library"
-                element="allediaframework">AllediaFramework</extension>
+            <extension type="library"
+                       element="allediaframework">AllediaFramework</extension>
 
-            <extension
-                type="plugin"
-                group="system"
-                element="ossystem"
-                publish="true"
-                ordering="first">OSSystem</extension>
+            <extension type="plugin"
+                       group="system"
+                       element="ossystem"
+                       publish="true"
+                       ordering="first">OSSystem</extension>
         </relatedExtensions>
 
         <include>AllediaFreeDefaultFiles</include>
@@ -35,15 +33,15 @@
 
     <media destination="plg_system_ospamanot" folder="media">
         <folder>css</folder>
-        <folder>js</folder>
         <folder>images</folder>
     </media>
 
     <files>
+        <folder>form</folder>
         <folder>language</folder>
         <folder>library</folder>
         <folder>views</folder>
-        <folder>form</folder>
+
         <filename plugin="ospamanot">ospamanot.php</filename>
         <filename>include.php</filename>
     </files>
@@ -51,7 +49,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic"
-                addfieldpath="/plugins/system/ospamanot/form/fields/">
+                      addfieldpath="/plugins/system/ospamanot/form/fields/">
 
                 <field
                     name="timeGate"
@@ -75,7 +73,7 @@
                     name="customfooter"
                     media="plg_system_ospamanot"
                     showgoproad="0"
-                    jedurl="https://extensions.joomla.org/extension/ospam-a-not" />
+                    jedurl="https://extensions.joomla.org/extension/ospam-a-not"/>
             </fieldset>
         </fields>
     </config>

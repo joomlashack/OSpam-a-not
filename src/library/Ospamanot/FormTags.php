@@ -46,7 +46,7 @@ class FormTags
     {
         $properties = get_object_vars($this);
         foreach ($properties as $property => $value) {
-            $this->{$property} = isset($values[$property]) ? $values[$property] : $this->{$property};
+            $this->{$property} = $values[$property] ?? $this->{$property};
         }
     }
 }

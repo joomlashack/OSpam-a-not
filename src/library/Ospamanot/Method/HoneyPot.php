@@ -40,14 +40,14 @@ class HoneyPot extends AbstractMethod
     /**
      * @var array A collection of reasonable sounding field names
      */
-    protected $honeyPots = array(
+    protected $honeyPots = [
         'my_name'           => 0,
         'your_name'         => 0,
         'your_name_here'    => 0,
         'my_address'        => 0,
         'your_address'      => 0,
         'your_address_here' => 0
-    );
+    ];
 
     /**
      * Check the timeGate/Honeypot fields if they exist
@@ -57,7 +57,7 @@ class HoneyPot extends AbstractMethod
      */
     public function onAfterInitialise()
     {
-        if (in_array($this->app->input->getMethod(), array('GET', 'POST'))) {
+        if (in_array($this->app->input->getMethod(), ['GET', 'POST'])) {
             $secret = $this->getHashedFieldName();
 
             if (array_key_exists($secret, $_REQUEST)) {
@@ -83,7 +83,7 @@ class HoneyPot extends AbstractMethod
                             $honeyPot = $nameList[$idx];
                             if (isset($_REQUEST[$honeyPot]) && $_REQUEST[$honeyPot] === '') {
                                 // Honey pot passed
-                                $this->checkUrl(array($secret, $honeyPot));
+                                $this->checkUrl([$secret, $honeyPot]);
 
                             } else {
                                 // Failed the honey pot
@@ -114,7 +114,7 @@ class HoneyPot extends AbstractMethod
                 $body = $this->app->getBody();
 
                 if ($forms = $this->findForms($body)) {
-                    foreach ($forms as $idx => $form) {
+                    foreach ($forms as $form) {
                         $this->addHiddenFields($body, $form);
                     }
                     $this->app->setBody($body);

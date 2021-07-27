@@ -24,82 +24,74 @@
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\Folder;
 
 defined('_JEXEC') or die();
 
-require_once 'include.php';
+if (!include_once 'include.php') {
+    return;
+}
 
-if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
+class PlgSystemOspamanot extends AbstractPlugin
+{
     /**
-     * Ospamanot Content Plugin
-     *
+     * @var string
      */
-    class PlgSystemOspamanot extends AbstractPlugin
+    protected $namespace = 'Ospamanot';
+
+    protected $autoloadLanguage = true;
+
+    /**
+     * @var CMSApplication
+     */
+    protected $app = null;
+
+    /**
+     * @param JEventDispatcher $subject
+     * @param array            $config
+     *
+     * @return void
+     */
+    public function __construct($subject, $config = [])
     {
-        /**
-         * @var string
-         */
-        protected $namespace = 'Ospamanot';
+        parent::__construct($subject, $config);
 
-        protected $autoloadLanguage = true;
+        // We only care about guest users on the frontend right now
+        if ($this->app->isClient('site')) {
+            $this->registerMethods($subject, $config);
+        }
+    }
 
-        /**
-         * @var CMSApplication
-         */
-        protected $app = null;
+    /**
+     * Register all the known method plugins
+     *
+     * @param JEventDispatcher $subject
+     * @param array            $config
+     */
+    protected function registerMethods($subject, $config)
+    {
+        try {
+            $classInfo = new ReflectionClass(AbstractMethod::class);
 
-        /**
-         * @param JEventDispatcher $subject
-         * @param array            $config
-         *
-         * @return void
-         * @throws Exception
-         */
-        public function __construct($subject, $config = array())
-        {
-            parent::__construct($subject, $config);
+            $path      = dirname($classInfo->getFileName());
+            $nameSpace = $classInfo->getNamespaceName();
 
-            // We only care about guest users on the frontend right now
-            if (Factory::getApplication()->isClient('site')) {
-                $this->registerMethods($subject, $config);
-            }
+        } catch (Throwable $error) {
+            // Fail silently
+            return;
         }
 
-        /**
-         * Register all the known method plugins
-         *
-         * @param JEventDispatcher $subject
-         * @param array            $config
-         */
-        protected function registerMethods($subject, $config)
-        {
-            try {
-                $classInfo = new ReflectionClass(AbstractMethod::class);
+        $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$');
 
-                $path      = dirname($classInfo->getFileName());
-                $nameSpace = $classInfo->getNamespaceName();
+        foreach ($methods as $file) {
+            $name      = basename($file, '.php');
+            $className = '\\' . $nameSpace . '\\' . $name;
 
-            } catch (Exception $error) {
-                return;
+            if (class_exists($className)) {
+                $config['name'] = $this->_name . strtolower($name);
 
-            } catch (Throwable $error) {
-                return;
-            }
-
-            $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$');
-
-            foreach ($methods as $file) {
-                $name      = basename($file, '.php');
-                $className = '\\' . $nameSpace . '\\' . $name;
-
-                if (class_exists($className)) {
-                    $config['name'] = $this->_name . strtolower($name);
-
-                    $method = new $className($subject, $config);
-                    $subject->attach($method);
-                }
+                $method = new $className($subject, $config);
+                $subject->attach($method);
             }
         }
     }

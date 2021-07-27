@@ -26,22 +26,28 @@ use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die();
 
-if (!defined('OSPAMANOT_ROOT')) {
-    define('OSPAMANOT_ROOT', __DIR__);
+if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
+    $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
 
-    if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
-        $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
+    if (is_file($allediaFrameworkPath)) {
+        require_once $allediaFrameworkPath;
 
-        if (file_exists($allediaFrameworkPath)) {
-            require_once $allediaFrameworkPath;
+    } elseif (
+        ($app = Factory::getApplication())
+        && $app->isClient('administrator')
+    ) {
+        $app->enqueueMessage('[OSpam-a-not] Joomlashack Framework not found', 'error');
 
-        } else {
-            Factory::getApplication()
-                ->enqueueMessage('[Joomlashack OSpam-a-not] Joomlashack Framework not found', 'error');
-        }
-    }
-
-    if (defined('ALLEDIA_FRAMEWORK_LOADED')) {
-        AutoLoader::register('Alledia', __DIR__ . '/library');
+        return false;
     }
 }
+
+if (!defined('OSPAMANOT_LOADED')) {
+    define('OSPAMANOT_ROOT', __DIR__);
+
+    AutoLoader::register('Alledia', __DIR__ . '/library');
+
+    define('OSVIMEO_LOADED', true);
+}
+
+return defined('OSPAMANOT_LOADED');

@@ -3,7 +3,7 @@
     "description"      : "OSpam-a-not",
     "minimum-stability": "stable",
     "license"          : "GPL",
-    "type"             : "joomla.plugin",
+    "type"             : "joomla-plugin",
     "extra"            : {
         "element"        : "plg_system_ospamanot",
         "element-short"  : "ospamanot",
@@ -21,6 +21,6 @@
         }
     ],
     "require"          : {
-        "php": ">=5.6"
+        "php": ">=7.2.5"
     }
 }
