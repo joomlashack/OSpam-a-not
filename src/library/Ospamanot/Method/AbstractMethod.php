@@ -103,6 +103,7 @@ abstract class AbstractMethod extends AbstractPlugin
 
                     $this->app->enqueueMessage($message, 'error');
                     $this->app->redirect(Route::_($link));
+
                     return;
             }
         }
