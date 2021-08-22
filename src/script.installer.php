@@ -22,6 +22,7 @@
  */
 
 use Alledia\Installer\AbstractScript;
+use Joomla\CMS\Installer\InstallerAdapter;
 
 defined('_JEXEC') or die();
 
@@ -31,7 +32,7 @@ class plgsystemospamanotInstallerScript extends AbstractScript
 {
     /**
      * @param string                     $type
-     * @param JInstallerAdapterComponent $parent
+     * @param InstallerAdapter $parent
      *
      * @return void
      */
