@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Alledia Extension Builder" default="build">
-    <property name="builder.client.version" value="3.16.0"/>
-    <echo message="AllediaBuilder Client Version ${builder.client.version}"/>
+<project name="ShackBuilder Client" default="build">
+    <property name="builder.version.client" value="4.0.3"/>
+    <echo message="${phing.project.name} Version ${builder.version.client}"/>
 
     <if>
         <available file="./build.properties" type="file"/>
@@ -19,17 +19,16 @@ Missing 'build.properties' file in the project root folder
 Missing 'builder.path' property
     </fail>
 
+    <property name="builder.type" value="build"/>
     <if>
-        <available file="${builder.path}/src/build.xml" type="file"/>
+        <available file="${builder.path}/src/${builder.type}.xml" type="file"/>
         <then>
-            <import file="${builder.path}/src/build.xml"/>
+            <import file="${builder.path}/src/${builder.type}.xml"/>
         </then>
         <else>
             <fail>-
-Missing 'build.xml' file in builder source path
+Missing '${builder.type}.xml' file in builder source path
             </fail>
         </else>
     </if>
-
-
 </project>
