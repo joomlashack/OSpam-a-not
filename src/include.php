@@ -28,6 +28,11 @@ defined('_JEXEC') or die();
 
 $app = Factory::getApplication();
 
+if ($app->input->getCmd('option') == 'com_installer') {
+    // Avoid conflicts during installation
+    return false;
+}
+
 if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
     $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
 

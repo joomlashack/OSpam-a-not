@@ -25,73 +25,91 @@ use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Filesystem\Folder;
+use Joomla\Event\Dispatcher;
 
 defined('_JEXEC') or die();
 
-if (!include_once 'include.php') {
-    return;
-}
-
-class PlgSystemOspamanot extends AbstractPlugin
-{
-    /**
-     * @var string
-     */
-    protected $namespace = 'Ospamanot';
-
-    protected $autoloadLanguage = true;
-
-    /**
-     * @var CMSApplication
-     */
-    protected $app = null;
-
-    /**
-     * @param JEventDispatcher $subject
-     * @param array            $config
-     *
-     * @return void
-     */
-    public function __construct($subject, $config = [])
+if (include_once 'include.php') {
+    class PlgSystemOspamanot extends AbstractPlugin
     {
-        parent::__construct($subject, $config);
+        /**
+         * @var string
+         */
+        protected $namespace = 'Ospamanot';
 
-        // We only care about guest users on the frontend right now
-        if ($this->app->isClient('site')) {
-            $this->registerMethods($subject, $config);
-        }
-    }
+        protected $autoloadLanguage = true;
 
-    /**
-     * Register all the known method plugins
-     *
-     * @param JEventDispatcher $subject
-     * @param array            $config
-     */
-    protected function registerMethods($subject, $config)
-    {
-        try {
-            $classInfo = new ReflectionClass(AbstractMethod::class);
+        /**
+         * @var CMSApplication
+         */
+        protected $app = null;
 
-            $path      = dirname($classInfo->getFileName());
-            $nameSpace = $classInfo->getNamespaceName();
+        /**
+         * @param JEventDispatcher|Dispatcher $subject
+         * @param array                       $config
+         *
+         * @return void
+         */
+        public function __construct($subject, $config = [])
+        {
+            parent::__construct($subject, $config);
 
-        } catch (Throwable $error) {
-            // Fail silently
-            return;
+            // We only care about guest users on the frontend
+            if ($this->app->isClient('site')) {
+                $this->registerMethods($subject, $config);
+            }
         }
 
-        $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$');
+        /**
+         * Register all the known method plugins
+         *
+         * @param JEventDispatcher|Dispatcher $subject
+         * @param array                       $config
+         */
+        protected function registerMethods($subject, $config)
+        {
+            try {
+                $classInfo = new ReflectionClass(AbstractMethod::class);
 
-        foreach ($methods as $file) {
-            $name      = basename($file, '.php');
-            $className = '\\' . $nameSpace . '\\' . $name;
+                $path      = dirname($classInfo->getFileName());
+                $nameSpace = $classInfo->getNamespaceName();
 
-            if (class_exists($className)) {
-                $config['name'] = $this->_name . strtolower($name);
+            } catch (Throwable $error) {
+                // Fail silently
+                return;
+            }
 
-                $method = new $className($subject, $config);
-                $subject->attach($method);
+            $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$');
+
+            foreach ($methods as $file) {
+                $name      = basename($file, '.php');
+                $className = '\\' . $nameSpace . '\\' . $name;
+
+                if (class_exists($className)) {
+                    $config['name'] = $this->_name . strtolower($name);
+
+                    /** @var AbstractMethod $handler */
+                    $handler = new $className($subject, $config);
+
+                    if ($subject instanceof JEventDispatcher) {
+                        // Joomla 3
+                        $subject->attach($handler);
+
+                    } elseif ($subject instanceof Dispatcher) {
+                        // Joomla 4
+
+                        /*
+                        \Joomla\CMS\Plugin\PluginHelper::importPlugin()
+                        $x = \Joomla\CMS\Plugin\PluginHelper::getPlugin('system', 'ospamanot');
+                        $this->app->enqueueMessage('<pre>' . print_r($x, 1) . '</pre>');
+                        $methods = array_diff(
+                            get_class_methods($handler),
+                            get_class_methods('\\Joomla\\CMS\\Plugin\\CMSPlugin')
+                        );
+                        */
+                    }
+
+                }
             }
         }
     }
