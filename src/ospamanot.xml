@@ -16,6 +16,8 @@
         <namespace>Ospamanot</namespace>
         <license>free</license>
         <relatedExtensions>
+            <extension type="library"
+                       element="allediaframework">ShackFramework</extension>
             <extension type="plugin"
                        group="system"
                        element="osmylicensesmanager"
