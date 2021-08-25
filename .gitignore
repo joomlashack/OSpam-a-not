@@ -2,7 +2,12 @@
 ###################################
 .*
 *~
+*.bak
+build.properties
+
 !.gitignore
+!.gitkeep
+!.htaccess
 
 # Icon must ends with two \r.
 Icon
@@ -13,13 +18,8 @@ Icon
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
-
-# Folder config file
 Desktop.ini
-
-# Recycle Bin used on file shares
 $RECYCLE.BIN/
-
 
 # Eclipse #
 ###########
@@ -32,6 +32,11 @@ local.properties
 ## IntelliJ
 out/
 
+# Node files
+##############
+node_modules
+package*.json
+
 # NetBeans IDE #
 ################
 nbproject/private/
@@ -42,11 +47,13 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 
+# Phing #
+#########
+packages/*
+
 # misc other files #
 ####################
 _notes/
-
-packages/*
-!packages/.gitkeep
-
-build.properties
+error_log
+config.codekit
+tests/_output/*
