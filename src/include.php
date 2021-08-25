@@ -46,7 +46,7 @@ if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
     }
 }
 
-if (!defined('OSPAMANOT_LOADED')) {
+if (defined('ALLEDIA_FRAMEWORK_LOADED') && !defined('OSPAMANOT_LOADED')) {
     define('OSPAMANOT_LOADED', true);
     define('OSPAMANOT_ROOT', __DIR__);
 
