@@ -97,18 +97,9 @@ if (include_once 'include.php') {
 
                     } elseif ($subject instanceof Dispatcher) {
                         // Joomla 4
-
-                        /*
-                        \Joomla\CMS\Plugin\PluginHelper::importPlugin()
-                        $x = \Joomla\CMS\Plugin\PluginHelper::getPlugin('system', 'ospamanot');
-                        $this->app->enqueueMessage('<pre>' . print_r($x, 1) . '</pre>');
-                        $methods = array_diff(
-                            get_class_methods($handler),
-                            get_class_methods('\\Joomla\\CMS\\Plugin\\CMSPlugin')
-                        );
-                        */
+                        // @TODO: Note this depends on J3 legacy support
+                        $handler->registerListeners();
                     }
-
                 }
             }
         }
