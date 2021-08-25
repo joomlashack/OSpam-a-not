@@ -11,7 +11,7 @@
         "folder"         : "system",
         "client"         : "site",
         "package-license": "free",
-        "target-platform": "3.*",
+        "target-platform": ".*",
         "infourl"        : "/changelog/ospam-a-not/"
     },
     "authors"          : [
