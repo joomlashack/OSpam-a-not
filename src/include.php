@@ -33,24 +33,19 @@ if ($app->input->getCmd('option') == 'com_installer') {
     return false;
 }
 
-if (!defined('ALLEDIA_FRAMEWORK_LOADED')) {
+if (!defined('OSPAMANOT_LOADED')) {
     $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
+    if (is_file($allediaFrameworkPath) && include $allediaFrameworkPath) {
+        define('OSPAMANOT_LOADED', true);
+        define('OSPAMANOT_ROOT', __DIR__);
 
-    if (is_file($allediaFrameworkPath)) {
-        require_once $allediaFrameworkPath;
+        AutoLoader::register('Alledia', __DIR__ . '/library');
 
-    } elseif ($app->isClient('administrator')) {
+    } else {
         $app->enqueueMessage('[OSpam-a-not] Joomlashack Framework not found', 'error');
 
         return false;
     }
-}
-
-if (defined('ALLEDIA_FRAMEWORK_LOADED') && !defined('OSPAMANOT_LOADED')) {
-    define('OSPAMANOT_LOADED', true);
-    define('OSPAMANOT_ROOT', __DIR__);
-
-    AutoLoader::register('Alledia', __DIR__ . '/library');
 }
 
 return defined('OSPAMANOT_LOADED');
