@@ -22,6 +22,7 @@
  */
 
 use Alledia\Installer\AbstractScript;
+use Alledia\Installer\TraitInstallerCheck;
 use Joomla\CMS\Installer\InstallerAdapter;
 
 defined('_JEXEC') or die();
@@ -30,6 +31,18 @@ require_once 'library/Installer/include.php';
 
 class plgsystemospamanotInstallerScript extends AbstractScript
 {
+    use TraitInstallerCheck;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct($parent)
+    {
+        if ($this->checkInheritance($parent)) {
+            parent::__construct($parent);
+        }
+    }
+
     /**
      * @param string                     $type
      * @param InstallerAdapter $parent
