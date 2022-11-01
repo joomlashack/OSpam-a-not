@@ -24,28 +24,35 @@
 use Alledia\Framework\AutoLoader;
 use Joomla\CMS\Factory;
 
+// phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
 
-$app = Factory::getApplication();
-
-if ($app->input->getCmd('option') == 'com_installer') {
+if (Factory::getApplication()->input->getCmd('option') == 'com_installer') {
     // Avoid conflicts during installation
     return false;
 }
 
-if (!defined('OSPAMANOT_LOADED')) {
-    $allediaFrameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
-    if (is_file($allediaFrameworkPath) && include $allediaFrameworkPath) {
-        define('OSPAMANOT_LOADED', true);
-        define('OSPAMANOT_ROOT', __DIR__);
+try {
+    $frameworkPath = JPATH_SITE . '/libraries/allediaframework/include.php';
+    if (is_file($frameworkPath) == false || (include $frameworkPath) == false) {
+        $app = Factory::getApplication();
 
-        AutoLoader::register('Alledia', __DIR__ . '/library');
-
-    } else {
-        $app->enqueueMessage('[OSpam-a-not] Joomlashack Framework not found', 'error');
+        if ($app->isClient('administrator')) {
+            $app->enqueueMessage('[OSpam-a-not] Joomlashack framework not found', 'error');
+        }
 
         return false;
     }
+
+    if (defined('ALLEDIA_FRAMEWORK_LOADED') && !defined('OSPAMANOT_LOADED')) {
+        define('OSPAMANOT_LOADED', true);
+    }
+
+} catch (Throwable $error) {
+    Factory::getApplication()
+        ->enqueueMessage('[OSpam-a-not] Unable to initialize: ' . $error->getMessage(), 'error');
+
+    return false;
 }
 
-return defined('OSPAMANOT_LOADED');
+return defined('ALLEDIA_FRAMEWORK_LOADED') && defined('OSPAMANOTLOADED');
