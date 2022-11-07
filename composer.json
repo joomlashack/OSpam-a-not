@@ -2,7 +2,7 @@
     "name"             : "joomlashack/ospamanot",
     "description"      : "OSpam-a-not",
     "minimum-stability": "stable",
-    "license"          : "GPL",
+    "license"          : "GPL-2.0-or-later",
     "type"             : "joomla-plugin",
     "extra"            : {
         "element"        : "plg_system_ospamanot",
