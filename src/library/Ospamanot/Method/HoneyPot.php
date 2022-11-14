@@ -28,7 +28,10 @@ use Alledia\Ospamanot\FormTags;
 use Exception;
 use Joomla\CMS\Language\Text;
 
+// phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
+// phpcs:enable PSR1.Files.SideEffects
 
 class HoneyPot extends AbstractMethod
 {
@@ -101,14 +104,14 @@ class HoneyPot extends AbstractMethod
     }
 
     /**
-     * if not logged in on an html page, add the timeGate/Honeypot fields to any forms found
+     * if not logged in on html page, add the timeGate/Honeypot fields to any forms found
      *
      * @return void
      */
     public function onAfterRender()
     {
         if (Factory::getUser()->guest) {
-            $doc = Factory::getDocument();
+            $doc = $this->app->getDocument();
 
             if ($doc->getType() == 'html') {
                 $body = $this->app->getBody();
@@ -131,7 +134,7 @@ class HoneyPot extends AbstractMethod
      *
      * @return void
      */
-    protected function addHiddenFields(&$body, FormTags $form)
+    protected function addHiddenFields(string &$body, FormTags $form)
     {
         $numbers = range(0, count($this->honeyPots) - 1);
         shuffle($numbers);
@@ -160,7 +163,7 @@ class HoneyPot extends AbstractMethod
                         $headTag = array_pop($headTag);
 
                         $css  = sprintf(
-                            '<style type="text/css">input[name=\'%s\'] {display: none !important;}</style>',
+                            '<style>input[name=\'%s\'] {display: none !important;}</style>',
                             $name
                         );
                         $body = str_replace($headTag, "\n" . $css . "\n" . $headTag, $body);
@@ -178,12 +181,10 @@ class HoneyPot extends AbstractMethod
      *
      * @return string
      */
-    protected function getHashedFieldName()
+    protected function getHashedFieldName(): string
     {
-        $config = Factory::getConfig();
-
-        $siteName = $config->get('sitename');
-        $secret   = $config->get('secret');
+        $siteName = $this->app->get('sitename');
+        $secret   = $this->app->get('secret');
 
         return md5($siteName . $secret);
     }

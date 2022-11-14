@@ -24,16 +24,19 @@
 namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
+use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\FormTags;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 
+// phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
+// phpcs:enable PSR1.Files.SideEffects
 
 abstract class AbstractMethod extends AbstractPlugin
 {
@@ -63,12 +66,12 @@ abstract class AbstractMethod extends AbstractPlugin
     /**
      * Standard response for use by subclasses that want to block the user for any reason
      *
-     * @param string $testName
+     * @param ?string $testName
      *
      * @return void
      * @throws Exception
      */
-    protected function block($testName = null)
+    protected function block(?string $testName = null)
     {
         $stack  = debug_backtrace();
         $caller = [];
@@ -90,10 +93,11 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($this->params->get('logging', 0)) {
-            Log::addLogger(['text_file' => 'ospamanot.log.php'], Log::ALL);
+            Log::addLogger(['text_file' => 'ospamanot.log.php']);
             Log::add(join('::', $caller), Log::NOTICE, $testName);
         }
 
+        // Must use legacy document load here until further notice
         if (Factory::getDocument()->getType() == 'html') {
             switch (strtolower($method)) {
                 case 'onafterinitialise':
@@ -137,11 +141,11 @@ abstract class AbstractMethod extends AbstractPlugin
     /**
      * Find all candidate forms for spam protection
      *
-     * @param $text
+     * @param string $text
      *
      * @return array
      */
-    protected function findForms($text)
+    protected function findForms(string $text): array
     {
         if ($this->forms === null) {
             $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';

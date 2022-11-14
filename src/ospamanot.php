@@ -27,7 +27,10 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\Event\Dispatcher;
 
+// phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+// phpcs:enable PSR1.Files.SideEffects
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
 if (include __DIR__ . '/include.php') {
     class PlgSystemOspamanot extends AbstractPlugin
@@ -65,8 +68,10 @@ if (include __DIR__ . '/include.php') {
          *
          * @param JEventDispatcher|Dispatcher $subject
          * @param array                       $config
+         *
+         * @return void
          */
-        protected function registerMethods($subject, $config)
+        protected function registerMethods($subject, array $config)
         {
             try {
                 $classInfo = new ReflectionClass(AbstractMethod::class);

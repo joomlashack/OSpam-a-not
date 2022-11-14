@@ -46,11 +46,9 @@
         <filename>include.php</filename>
     </files>
 
-    <config>
+    <config addfieldpath="/plugins/system/ospamanot/form/fields/">
         <fields name="params">
-            <fieldset name="basic"
-                      addfieldpath="/plugins/system/ospamanot/form/fields/">
-
+            <fieldset name="basic">
                 <field name="timeGate"
                        type="text"
                        label="PLG_SYSTEM_OSPAMANOT_TIMEGATE_LABEL"

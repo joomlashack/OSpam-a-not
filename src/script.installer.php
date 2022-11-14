@@ -22,21 +22,21 @@
  */
 
 use Alledia\Installer\AbstractScript;
-use Joomla\CMS\Installer\InstallerAdapter;
 
+// phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
 
-require_once 'library/Installer/include.php';
+require_once __DIR__ . '/library/Installer/include.php';
 
-class plgsystemospamanotInstallerScript extends AbstractScript
+// phpcs:enable PSR1.Files.SideEffects
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+
+class PlgsystemospamanotInstallerScript extends AbstractScript
 {
     /**
-     * @param string                     $type
-     * @param InstallerAdapter $parent
-     *
-     * @return void
+     * @inheritDoc
      */
-    public function customPostFlight($type, $parent)
+    protected function customPostFlight($type, $parent)
     {
         if (stripos($type, 'install') === false) {
             $this->reorderThisPlugin();
