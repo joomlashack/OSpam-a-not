@@ -60,44 +60,44 @@ class HoneyPot extends AbstractMethod
      */
     public function onAfterInitialise()
     {
-        if (in_array($this->app->input->getMethod(), ['GET', 'POST'])) {
-            $secret = $this->getHashedFieldName();
+        $method = strtolower($this->app->input->getMethod());
+        $input  = $this->app->input->{$method};
 
-            if (array_key_exists($secret, $_REQUEST)) {
-                $failMessage = null;
-                $timeKey     = $this->app->input->get($secret);
+        $secret = $this->getHashedFieldName();
+        if ($input->exists($secret)) {
+            $failMessage = null;
+            $timeKey     = $input->getString($secret);
 
-                if (preg_match('/^\d+(?:\.\d)?$/', $timeKey)) {
-                    // Our secret field was added, check response time
-                    $atoms     = explode('.', $timeKey);
-                    $startTime = array_shift($atoms);
-                    $idx       = $atoms ? array_shift($atoms) : null;
+            if (preg_match('/^\d+(?:\.\d)?$/', $timeKey)) {
+                // Our secret field was added, check response time
+                $atoms     = explode('.', $timeKey);
+                $startTime = array_shift($atoms);
+                $idx       = $atoms ? array_shift($atoms) : null;
 
-                    $timeGate = (float)$this->params->get('timeGate', 0);
-                    if ($timeGate && (time() - $startTime) < $timeGate) {
-                        // Failed timeGate
-                        $failMessage = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
+                $timeGate = (float)$this->params->get('timeGate', 0);
+                if ($timeGate && (time() - $startTime) < $timeGate) {
+                    // Failed timeGate
+                    $failMessage = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_TIMEGATE');
 
-                    } elseif ($idx !== null) {
-                        // Honey pot was also added, check it out
-                        $nameList = array_keys($this->honeyPots);
+                } elseif ($idx !== null) {
+                    // Honey pot was also added, check it out
+                    $nameList = array_keys($this->honeyPots);
 
-                        if (array_key_exists($idx, $nameList)) {
-                            $honeyPot = $nameList[$idx];
-                            if (isset($_REQUEST[$honeyPot]) && $_REQUEST[$honeyPot] === '') {
-                                // Honey pot passed
-                                $this->checkUrl([$secret, $honeyPot]);
+                    if (array_key_exists($idx, $nameList)) {
+                        $honeyPot = $nameList[$idx];
+                        if (isset($_REQUEST[$honeyPot]) && $_REQUEST[$honeyPot] === '') {
+                            // Honey pot passed
+                            $this->checkUrl([$secret, $honeyPot]);
 
-                            } else {
-                                // Failed the honey pot
-                                $failMessage = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
-                            }
+                        } else {
+                            // Failed the honey pot
+                            $failMessage = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_HONEYPOT');
                         }
                     }
+                }
 
-                    if ($failMessage) {
-                        $this->block($failMessage);
-                    }
+                if ($failMessage) {
+                    $this->block($failMessage);
                 }
             }
         }
