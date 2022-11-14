@@ -55,4 +55,4 @@ try {
     return false;
 }
 
-return defined('ALLEDIA_FRAMEWORK_LOADED') && defined('OSPAMANOTLOADED');
+return defined('ALLEDIA_FRAMEWORK_LOADED') && defined('OSPAMANOT_LOADED');
