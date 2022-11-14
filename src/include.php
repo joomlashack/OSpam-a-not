@@ -46,6 +46,8 @@ try {
 
     if (defined('ALLEDIA_FRAMEWORK_LOADED') && !defined('OSPAMANOT_LOADED')) {
         define('OSPAMANOT_LOADED', true);
+
+        AutoLoader::register('Alledia\\Ospamanot', __DIR__ . '/library/Ospamanot');
     }
 
 } catch (Throwable $error) {
