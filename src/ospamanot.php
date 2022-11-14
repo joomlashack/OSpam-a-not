@@ -29,7 +29,7 @@ use Joomla\Event\Dispatcher;
 
 defined('_JEXEC') or die();
 
-if (include 'include.php') {
+if (include __DIR__ . '/include.php') {
     class PlgSystemOspamanot extends AbstractPlugin
     {
         /**
