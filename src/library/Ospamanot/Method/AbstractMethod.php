@@ -35,7 +35,6 @@ use Joomla\CMS\Uri\Uri;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
-
 // phpcs:enable PSR1.Files.SideEffects
 
 abstract class AbstractMethod extends AbstractPlugin
