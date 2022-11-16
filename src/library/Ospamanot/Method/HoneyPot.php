@@ -60,7 +60,18 @@ class HoneyPot extends AbstractMethod
     public function onAfterInitialise()
     {
         $method = strtolower($this->app->input->getMethod());
-        $input  = $this->app->input->{$method};
+        switch ($method) {
+            case 'get':
+                $input = $this->app->input->get;
+                break;
+
+            case 'post':
+                $input = $this->app->input->post;
+                break;
+
+            default:
+                return;
+        }
 
         $secret = $this->getHashedFieldName();
         if ($input->exists($secret)) {

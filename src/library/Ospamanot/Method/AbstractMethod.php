@@ -63,20 +63,6 @@ abstract class AbstractMethod extends AbstractPlugin
     ];
 
     /**
-     * @inheritDoc
-     * @throws Exception
-     */
-    public function __construct(&$subject, $config = [])
-    {
-        parent::__construct($subject, $config);
-
-        if (empty($this->app)) {
-            // This is supposed to be automatic but sometimes isn't for reasons unknown
-            $this->app = Factory::getApplication();
-        }
-    }
-
-    /**
      * Standard response for use by subclasses that want to block the user for any reason
      *
      * @param ?string $testName
