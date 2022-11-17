@@ -60,23 +60,14 @@ class HoneyPot extends AbstractMethod
     public function onAfterInitialise()
     {
         $method = strtolower($this->app->input->getMethod());
-        switch ($method) {
-            case 'get':
-                $input = $this->app->input->get;
-                break;
-
-            case 'post':
-                $input = $this->app->input->post;
-                break;
-
-            default:
-                return;
+        if (in_array($method, ['get', 'post']) == false) {
+            return;
         }
 
         $secret = $this->getHashedFieldName();
-        if ($input->exists($secret)) {
+        if ($this->app->input->exists($secret)) {
             $failMessage = null;
-            $timeKey     = $input->getString($secret);
+            $timeKey     = $this->app->input->getString($secret);
 
             if (preg_match('/^\d+(?:\.\d)?$/', $timeKey)) {
                 // Our secret field was added, check response time
