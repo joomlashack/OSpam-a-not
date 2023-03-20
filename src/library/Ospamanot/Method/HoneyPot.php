@@ -30,6 +30,7 @@ use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
 // phpcs:enable PSR1.Files.SideEffects
 
 class HoneyPot extends AbstractMethod
@@ -147,14 +148,11 @@ class HoneyPot extends AbstractMethod
             if (stripos($form->source, $name) === false) {
                 $secret = $this->getHashedFieldName();
 
-                $secretValue = time();
-                $honeyPot    = '';
-                if ($form->addText) {
-                    $secretValue .= '.' . $idx;
-                    $honeyPot    = sprintf('<input type="text" name="%s" value=""/>', $name);
-                }
-                $timeGate = sprintf('<input type="hidden" name="%s" value="%s"/>', $secret, $secretValue);
-                $replace  = str_replace($form->endTag, $honeyPot . $timeGate . $form->endTag, $form->source);
+                $secretValue = time() . '.' . $idx;
+                $honeyPot    = sprintf('<input type="text" name="%s" value=""/>', $name);
+                $timeGate    = sprintf('<input type="hidden" name="%s" value="%s"/>', $secret, $secretValue);
+
+                $replace = str_replace($form->endTag, $honeyPot . $timeGate . $form->endTag, $form->source);
 
                 if ($replace != $form->source) {
                     $body = str_replace($form->source, $replace, $body);

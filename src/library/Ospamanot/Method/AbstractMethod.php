@@ -35,6 +35,7 @@ use Joomla\CMS\Uri\Uri;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
 // phpcs:enable PSR1.Files.SideEffects
 
 abstract class AbstractMethod extends AbstractPlugin
@@ -169,16 +170,17 @@ abstract class AbstractMethod extends AbstractPlugin
                     }
 
                     /*
-                     * If a form has only one text field and no submit button,
-                     * the form can be submitted by pressing enter/return key.
-                     * Modifying the form for our purposes will break that
-                     * behavior
+                     * If a form has only one text field, don't bother attempting
+                     * to protect it. A human can easily fill out such a form
+                     * within a really short time (timeGate) and the could be made
+                     * non-functional (HoneyPot)
                      */
-                    $this->forms[] = new FormTags([
-                        'source'  => $form,
-                        'endTag'  => $matches[2][$idx],
-                        'addText' => $text > 1 || $submit > 0
-                    ]);
+                    if ($text > 1) {
+                        $this->forms[] = new FormTags([
+                            'source' => $form,
+                            'endTag' => $matches[2][$idx],
+                        ]);
+                    }
                 }
             }
         }
