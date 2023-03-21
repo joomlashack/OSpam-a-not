@@ -25,7 +25,6 @@ namespace Alledia\Ospamanot;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
-
 // phpcs:enable PSR1.Files.SideEffects
 
 class FormTags
@@ -39,6 +38,11 @@ class FormTags
      * @var string
      */
     public $endTag = null;
+
+    /**
+     * @var bool
+     */
+    public $addText = false;
 
     public function __construct($values)
     {
