@@ -38,6 +38,8 @@ defined('_JEXEC') or die();
 
 abstract class AbstractMethod extends AbstractPlugin
 {
+    public const LOG_FILE = 'ospamanot.log.php';
+
     /**
      * @var FormTags[]
      */
@@ -91,8 +93,9 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($this->params->get('logging', 0)) {
-            Log::addLogger(['text_file' => 'ospamanot.log.php']);
-            Log::add(join('::', $caller), Log::NOTICE, $testName);
+            $category = 'osan.' . ($testName ?: 'generic');
+            Log::addLogger(['text_file' => static::LOG_FILE], Log::ALL, [$category]);
+            Log::add(join('::', $caller), Log::NOTICE, $category);
         }
 
         if ($this->app->input->getCmd('format', 'html') == 'html') {
