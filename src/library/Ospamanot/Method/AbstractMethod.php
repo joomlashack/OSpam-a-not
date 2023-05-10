@@ -23,7 +23,6 @@
 
 namespace Alledia\Ospamanot\Method;
 
-use Alledia\Framework\Factory;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\FormTags;
 use Exception;
@@ -96,8 +95,7 @@ abstract class AbstractMethod extends AbstractPlugin
             Log::add(join('::', $caller), Log::NOTICE, $testName);
         }
 
-        // Must use legacy document load here until further notice
-        if (Factory::getDocument()->getType() == 'html') {
+        if ($this->app->input->getCmd('format', 'html') == 'html') {
             switch (strtolower($method)) {
                 case 'onafterinitialise':
                 case 'onafterroute':
