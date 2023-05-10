@@ -75,17 +75,17 @@ abstract class AbstractMethod extends AbstractPlugin
         $stack  = debug_backtrace();
         $caller = [];
         $method = null;
-        if (!empty($stack[1]['class'])) {
+        if (empty($stack[1]['class']) == false) {
             $classParts = explode('\\', $stack[1]['class']);
             $caller[]   = array_pop($classParts);
         }
 
-        if (!empty($stack[1]['function'])) {
+        if (empty($stack[1]['function']) == false) {
             $caller[] = $stack[1]['function'];
             $method   = $stack[1]['function'];
         }
 
-        if (!$testName) {
+        if ($testName == false) {
             $message = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
         } else {
             $message = Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
