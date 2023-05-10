@@ -111,5 +111,21 @@ if (include __DIR__ . '/include.php') {
                 }
             }
         }
+
+        /**
+         * @return void
+         */
+        public function onAjaxOsanDownload()
+        {
+            $entries = AbstractMethod::getLogEntries();
+            $fileName = basename(AbstractMethod::LOG_FILE, '.php');
+
+            header('Content-Type: text/plain');
+            header(sprintf('Content-Disposition: attachment; filename="%s"', $fileName));
+
+            echo join('', $entries);
+
+            jexit();
+        }
     }
 }

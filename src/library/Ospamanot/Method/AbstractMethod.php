@@ -23,6 +23,7 @@
 
 namespace Alledia\Ospamanot\Method;
 
+use Alledia\Framework\Factory;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\FormTags;
 use Exception;
@@ -62,6 +63,34 @@ abstract class AbstractMethod extends AbstractPlugin
         'text',
         'url'
     ];
+
+    /**
+     * @return string[]
+     */
+    public static function getLogEntries(): array
+    {
+        try {
+            $logPath = Factory::getApplication()->get('log_path') . '/' . static::LOG_FILE;
+            $entries = is_file($logPath) ? file($logPath) : [];
+
+            if ($entries) {
+                $entries = array_values(
+                    array_filter($entries, function ($entry) {
+                        $entry = trim($entry);
+
+                        return stripos($entry, '#fields') === 0 || (strlen($entry) == 0 || $entry[0] == '#') == false;
+                    })
+                );
+
+                $entries[0] = preg_replace('/#fields:\s*/i', '', $entries[0]);
+            }
+
+        } catch (\Throwable $error) {
+            $entries = [];
+        }
+
+        return $entries;
+    }
 
     /**
      * Standard response for use by subclasses that want to block the user for any reason
