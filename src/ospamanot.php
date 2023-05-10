@@ -36,10 +36,13 @@ if (include __DIR__ . '/include.php') {
     class PlgSystemOspamanot extends AbstractPlugin
     {
         /**
-         * @var string
+         * @inheritdoc
          */
         protected $namespace = 'Ospamanot';
 
+        /**
+         * @inheritdoc
+         */
         protected $autoloadLanguage = true;
 
         /**
