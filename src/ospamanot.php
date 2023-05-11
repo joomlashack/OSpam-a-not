@@ -25,6 +25,7 @@ use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Language\Text;
 use Joomla\Event\Dispatcher;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -117,7 +118,10 @@ if (include __DIR__ . '/include.php') {
          */
         public function onAjaxOsanDownload()
         {
-            $entries = AbstractMethod::getLogEntries();
+            error_reporting(0);
+            ini_set('display_errors', 0);
+
+            $entries  = AbstractMethod::getLogEntries();
             $fileName = basename(AbstractMethod::LOG_FILE, '.php');
 
             header('Content-Type: text/plain');
@@ -126,6 +130,29 @@ if (include __DIR__ . '/include.php') {
             echo join('', $entries);
 
             jexit();
+        }
+
+        /**
+         * @return string
+         */
+        public function onAjaxOsanClear(): string
+        {
+            $errorReporting = error_reporting(-1);
+            $displayErrors  = ini_set('display_errors', 1);
+            ob_start();
+
+            $logPath = $this->app->get('log_path') . '/' . AbstractMethod::LOG_FILE;
+            if (is_file($logPath)) {
+                unlink($logPath);
+            }
+
+            $errors = ob_get_contents();
+            ob_end_clean();
+
+            error_reporting($errorReporting);
+            ini_set('display_errors', $displayErrors);
+
+            return $errors ?: Text::_('PLG_SYSTEM_OSPAMANOT_LOG_CLEAR_SUCCESS');
         }
     }
 }
