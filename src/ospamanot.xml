@@ -37,6 +37,7 @@
     </media>
 
     <files>
+        <folder>field</folder>
         <folder>form</folder>
         <folder>language</folder>
         <folder>library</folder>
