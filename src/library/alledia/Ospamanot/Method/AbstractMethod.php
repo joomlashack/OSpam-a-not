@@ -27,14 +27,19 @@ use Alledia\Framework\Factory;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\FormTags;
 use Exception;
+use JEventDispatcher;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Dispatcher\Dispatcher;
+use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
 // phpcs:enable PSR1.Files.SideEffects
 
 abstract class AbstractMethod extends AbstractPlugin
@@ -63,6 +68,43 @@ abstract class AbstractMethod extends AbstractPlugin
         'text',
         'url'
     ];
+
+    /**
+     * @param DispatcherInterface $subject
+     * @param array               $config
+     *
+     * @return void
+     * @throws Exception
+     */
+    public static function registerMethods($subject, array $config): void
+    {
+        $files = Folder::files(__DIR__, '^(?!AbstractMethod).*\.php$');
+
+        foreach ($files as $file) {
+            $name      = basename($file, '.php');
+            $className = '\\' . __NAMESPACE__ . '\\' . $name;
+
+            if (class_exists($className)) {
+                $config['name'] .= '_' . strtolower($name);
+
+                /** @var AbstractMethod $handler */
+                $handler = new $className($subject, $config);
+
+                if ($subject instanceof JEventDispatcher) {
+                    // Joomla 3
+                    $subject->attach($handler);
+
+                } elseif ($subject instanceof Dispatcher) {
+                    // Joomla 4
+                    // @TODO: Note this depends on J3 legacy support
+                    $handler->registerListeners();
+                }
+
+            } else {
+                Factory::getApplication()->enqueueMessage('Class ' . $className . ' not found in ' . $file);
+            }
+        }
+    }
 
     /**
      * @return string[]

@@ -27,6 +27,12 @@
         </relatedExtensions>
 
         <include>ShackDefaultFiles</include>
+
+        <obsolete>
+            <preflight>
+                <folder>plugins/system/ospamanot/library</folder>
+            </preflight>
+        </obsolete>
     </alledia>
 
     <scriptfile>script.installer.php</scriptfile>

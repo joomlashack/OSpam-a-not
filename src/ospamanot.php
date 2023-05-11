@@ -24,7 +24,6 @@
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\Event\Dispatcher;
 
@@ -52,64 +51,15 @@ if (include __DIR__ . '/include.php') {
         protected $app = null;
 
         /**
-         * @param JEventDispatcher|Dispatcher $subject
-         * @param array                       $config
-         *
-         * @return void
+         * @inheritDoc
          */
         public function __construct($subject, $config = [])
         {
             parent::__construct($subject, $config);
 
-            // We only care about guest users on the frontend
             if ($this->app->isClient('site')) {
-                $this->registerMethods($subject, $config);
-            }
-        }
-
-        /**
-         * Register all the known method plugins
-         *
-         * @param JEventDispatcher|Dispatcher $subject
-         * @param array                       $config
-         *
-         * @return void
-         */
-        protected function registerMethods($subject, array $config)
-        {
-            try {
-                $classInfo = new ReflectionClass(AbstractMethod::class);
-
-                $path      = dirname($classInfo->getFileName());
-                $nameSpace = $classInfo->getNamespaceName();
-
-            } catch (Throwable $error) {
-                // Fail silently
-                return;
-            }
-
-            $methods = Folder::files($path, '^(?!AbstractMethod).*\.php$');
-
-            foreach ($methods as $file) {
-                $name      = basename($file, '.php');
-                $className = '\\' . $nameSpace . '\\' . $name;
-
-                if (class_exists($className)) {
-                    $config['name'] = $this->_name . strtolower($name);
-
-                    /** @var AbstractMethod $handler */
-                    $handler = new $className($subject, $config);
-
-                    if ($subject instanceof JEventDispatcher) {
-                        // Joomla 3
-                        $subject->attach($handler);
-
-                    } elseif ($subject instanceof Dispatcher) {
-                        // Joomla 4
-                        // @TODO: Note this depends on J3 legacy support
-                        $handler->registerListeners();
-                    }
-                }
+                // We only care about guest users on the frontend
+                AbstractMethod::registerMethods($subject, $config);
             }
         }
 

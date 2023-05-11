@@ -45,9 +45,12 @@ try {
     }
 
     if (defined('ALLEDIA_FRAMEWORK_LOADED') && !defined('OSPAMANOT_LOADED')) {
-        define('OSPAMANOT_LOADED', true);
+        define('OSPAMANOT_ROOT', __DIR__);
+        define('OSPAMANOT_LIBRARY', OSPAMANOT_ROOT . '/library');
 
-        AutoLoader::register('Alledia\\Ospamanot', __DIR__ . '/library/Ospamanot');
+        AutoLoader::register('Alledia', OSPAMANOT_LIBRARY . '/alledia');
+
+        define('OSPAMANOT_LOADED', true);
     }
 
 } catch (Throwable $error) {
