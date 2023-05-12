@@ -26,8 +26,8 @@ namespace Alledia\Ospamanot;
 // phpcs:disable PSR1.Files.SideEffects
 
 defined('_JEXEC') or die();
+
 // phpcs:enable PSR1.Files.SideEffects
-// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
 class Forms implements \Iterator
 {
@@ -90,9 +90,9 @@ class Forms implements \Iterator
                 }
 
                 $this->forms[] = new FormTags([
-                    'source'  => $form,
-                    'endTag'  => $matches[2][$idx],
-                    'simple'  => $text <= 1 && $submit == 0
+                    'source' => $form,
+                    'endTag' => $matches[2][$idx],
+                    'simple' => $text <= 1 && $submit == 0
                 ]);
             }
         }
