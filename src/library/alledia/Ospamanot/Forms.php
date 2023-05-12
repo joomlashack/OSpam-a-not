@@ -64,7 +64,7 @@ class Forms implements \Iterator
      *
      * @param string $text
      *
-     * @return array
+     * @return void
      */
     protected function setForms(string $text): void
     {
@@ -92,7 +92,6 @@ class Forms implements \Iterator
                 $this->forms[] = new FormTags([
                     'source'  => $form,
                     'endTag'  => $matches[2][$idx],
-                    'addText' => $text > 1 || $submit > 0,
                     'simple'  => $text <= 1 && $submit == 0
                 ]);
             }

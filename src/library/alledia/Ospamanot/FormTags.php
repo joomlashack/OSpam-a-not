@@ -43,11 +43,6 @@ class FormTags
     /**
      * @var bool
      */
-    public $addText = false;
-
-    /**
-     * @var bool
-     */
     public $simple = true;
 
     public function __construct($values)
