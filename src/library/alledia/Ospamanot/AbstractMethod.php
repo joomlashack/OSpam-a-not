@@ -29,6 +29,7 @@ use Exception;
 use JEventDispatcher;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Dispatcher\Dispatcher;
+use Joomla\Event\DispatcherInterface;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -55,7 +56,7 @@ abstract class AbstractMethod extends AbstractPlugin
     protected $app = null;
 
     /**
-     * @param JEventDispatcher|Dispatcher $subject
+     * @param DispatcherInterface $subject
      * @param array                       $config
      *
      * @return void
