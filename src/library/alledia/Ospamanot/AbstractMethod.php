@@ -45,27 +45,14 @@ abstract class AbstractMethod extends AbstractPlugin
     public const LOG_FILE = 'ospamanot.log.php';
 
     /**
-     * @var FormTags[]
+     * @var Forms[]
      */
-    protected $forms = null;
+    protected $forms = [];
 
     /**
      * @var CMSApplication
      */
     protected $app = null;
-
-    /**
-     * @var string[] HTML5 text fields
-     */
-    protected $textFields = [
-        'email',
-        'number',
-        'password',
-        'search',
-        'tel',
-        'text',
-        'url'
-    ];
 
     /**
      * @param JEventDispatcher|Dispatcher $subject
@@ -134,6 +121,21 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         return $entries;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return Forms
+     */
+    protected function getForms(string $text): Forms
+    {
+        $key = md5($text);
+        if (array_key_exists($key, $this->forms) == false) {
+            $this->forms[$key] = new Forms($text);
+        }
+
+        return $this->forms[$key];
     }
 
     /**
@@ -209,54 +211,5 @@ abstract class AbstractMethod extends AbstractPlugin
         if ($query != $uri->getQuery(true)) {
             $this->app->redirect($uri);
         }
-    }
-
-    /**
-     * Find all candidate forms for spam protection
-     *
-     * @param string $text
-     *
-     * @return array
-     */
-    protected function findForms(string $text): array
-    {
-        if ($this->forms === null) {
-            $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
-            $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
-
-            $this->forms = [];
-            if (preg_match_all($regexForm, $text, $matches)) {
-                foreach ($matches[0] as $idx => $form) {
-                    $submit = 0;
-                    $text   = 0;
-                    if (preg_match_all($regexFields, $form, $fields)) {
-                        foreach ($fields[1] as $fdx => $field) {
-                            $fieldType = $fields[2][$fdx];
-
-                            if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
-                                $submit++;
-
-                            } elseif (in_array($fieldType, $this->textFields)) {
-                                $text++;
-                            }
-                        }
-                    }
-
-                    /*
-                     * If a form has only one text field and no submit button,
-                     * the form can be submitted by pressing enter/return key.
-                     * Modifying the form for our purposes will break that
-                     * behavior
-                     */
-                    $this->forms[] = new FormTags([
-                        'source'  => $form,
-                        'endTag'  => $matches[2][$idx],
-                        'addText' => $text > 1 || $submit > 0
-                    ]);
-                }
-            }
-        }
-
-        return $this->forms;
     }
 }

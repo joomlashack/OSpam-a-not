@@ -31,6 +31,7 @@ use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
 // phpcs:enable PSR1.Files.SideEffects
 
 class HoneyPot extends AbstractMethod
@@ -118,7 +119,7 @@ class HoneyPot extends AbstractMethod
             if ($doc->getType() == 'html') {
                 $body = $this->app->getBody();
 
-                if ($forms = $this->findForms($body)) {
+                if ($forms = $this->getForms($body)) {
                     foreach ($forms as $form) {
                         $this->addHiddenFields($body, $form);
                     }
@@ -150,7 +151,8 @@ class HoneyPot extends AbstractMethod
 
                 $secretValue = time();
                 $honeyPot    = '';
-                if ($form->addText) {
+                if ($form->simple == false) {
+                    // Add the honeypot only if not a single input/no submit form
                     $secretValue .= '.' . $idx;
                     $honeyPot    = sprintf('<input type="text" name="%s" value=""/>', $name);
                 }
