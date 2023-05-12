@@ -62,36 +62,39 @@ abstract class AbstractMethod extends AbstractPlugin
      */
     public static function registerMethods($subject, array $config): void
     {
-        try {
-            $files = Folder::files(__DIR__ . '/Method', '^(?!AbstractMethod).*\.php$');
+        $methodPath = __DIR__ . '/Method';
+        if (is_dir($methodPath)) {
+            try {
+                $files = Folder::files($methodPath, '\.php$');
 
-            foreach ($files as $file) {
-                $name      = basename($file, '.php');
-                $className = '\\' . __NAMESPACE__ . '\\Method\\' . $name;
+                foreach ($files as $file) {
+                    $name      = basename($file, '.php');
+                    $className = '\\' . __NAMESPACE__ . '\\Method\\' . $name;
 
-                if (class_exists($className)) {
-                    $config['name'] .= '_' . strtolower($name);
+                    if (class_exists($className)) {
+                        $config['name'] .= '_' . strtolower($name);
 
-                    /** @var AbstractMethod $handler */
-                    $handler = new $className($subject, $config);
+                        /** @var AbstractMethod $handler */
+                        $handler = new $className($subject, $config);
 
-                    if ($subject instanceof JEventDispatcher) {
-                        // Joomla 3
-                        $subject->attach($handler);
+                        if ($subject instanceof JEventDispatcher) {
+                            // Joomla 3
+                            $subject->attach($handler);
 
-                    } elseif ($subject instanceof Dispatcher) {
-                        // Joomla 4
-                        // @TODO: Note this depends on J3 legacy support
-                        $handler->registerListeners();
+                        } elseif ($subject instanceof Dispatcher) {
+                            // Joomla 4
+                            // @TODO: Note this depends on J3 legacy support
+                            $handler->registerListeners();
+                        }
+
+                    } else {
+                        Factory::getApplication()->enqueueMessage('Class ' . $className . ' not found in ' . $file);
                     }
-
-                } else {
-                    Factory::getApplication()->enqueueMessage('Class ' . $className . ' not found in ' . $file);
                 }
-            }
 
-        } catch (\Throwable $error) {
-            // ignore
+            } catch (\Throwable $error) {
+                // ignore
+            }
         }
     }
 
