@@ -22,8 +22,9 @@
  */
 
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
-use Alledia\Ospamanot\Method\AbstractMethod;
+use Alledia\Ospamanot\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -56,7 +57,7 @@ if (include __DIR__ . '/include.php') {
         {
             parent::__construct($subject, $config);
 
-            if ($this->app->isClient('site')) {
+            if ($this->app->isClient('site') && Factory::getUser()->guest) {
                 // We only care about guest users on the frontend
                 AbstractMethod::registerMethods($subject, $config);
             }

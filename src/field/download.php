@@ -22,8 +22,9 @@
  */
 
 // phpcs:disable PSR1.Files.SideEffects
-use Alledia\Ospamanot\Method\AbstractMethod;
+use Alledia\Ospamanot\AbstractMethod;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\FormField;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
@@ -31,7 +32,7 @@ defined('_JEXEC') or die();
 // phpcs:enable PSR1.Files.SideEffects
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
-class OsanFormFieldDownload extends \Joomla\CMS\Form\FormField
+class OsanFormFieldDownload extends FormField
 {
     /**
      * @var string[]
@@ -54,6 +55,7 @@ class OsanFormFieldDownload extends \Joomla\CMS\Form\FormField
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     protected function getInput()
     {
@@ -71,13 +73,15 @@ class OsanFormFieldDownload extends \Joomla\CMS\Form\FormField
     {
         if ($this->entries === null) {
             $this->entries = AbstractMethod::getLogEntries();
-
         }
 
         return $this->entries;
     }
 
-    protected function getDownloadButton()
+    /**
+     * @return string
+     */
+    protected function getDownloadButton(): string
     {
         $count = max(0, count($this->getEntries()) - 1);
         $text  = Text::plural('PLG_SYSTEM_OSPAMANOT_LOG_DOWNLOAD', $count);
@@ -95,7 +99,11 @@ class OsanFormFieldDownload extends \Joomla\CMS\Form\FormField
         return sprintf('<div class="btn btn-primary disabled">%s</div>', $text);
     }
 
-    protected function getClearButton()
+    /**
+     * @return string
+     * @throws Exception
+     */
+    protected function getClearButton(): string
     {
         $count = max(0, count($this->getEntries()) - 1);
 
