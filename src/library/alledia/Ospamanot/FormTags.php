@@ -28,7 +28,7 @@ defined('_JEXEC') or die();
 
 // phpcs:enable PSR1.Files.SideEffects
 
-class FormTags
+final class FormTags
 {
     /**
      * @var string

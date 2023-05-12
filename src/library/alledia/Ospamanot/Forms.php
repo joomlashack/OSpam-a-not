@@ -24,12 +24,11 @@
 namespace Alledia\Ospamanot;
 
 // phpcs:disable PSR1.Files.SideEffects
-
 defined('_JEXEC') or die();
 
 // phpcs:enable PSR1.Files.SideEffects
 
-class Forms implements \Iterator
+final class Forms implements \Iterator
 {
     /**
      * @var FormTags[]
@@ -56,7 +55,7 @@ class Forms implements \Iterator
 
     public function __construct(string $text)
     {
-        $this->setForms($text);
+        $this->loadForms($text);
     }
 
     /**
@@ -66,10 +65,11 @@ class Forms implements \Iterator
      *
      * @return void
      */
-    protected function setForms(string $text): void
+    protected function loadForms(string $text): void
     {
         $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
         $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
+        $formFilter  = FormFilter::getInstance();
 
         $this->forms = [];
         if (preg_match_all($regexForm, $text, $matches)) {
@@ -89,11 +89,14 @@ class Forms implements \Iterator
                     }
                 }
 
-                $this->forms[] = new FormTags([
+                $form = new FormTags([
                     'source' => $form,
                     'endTag' => $matches[2][$idx],
                     'simple' => $text <= 1 && $submit == 0
                 ]);
+                if ($formFilter->exclude($form) == false) {
+                    $this->forms[] = $form;
+                }
             }
         }
     }
