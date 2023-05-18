@@ -25,7 +25,6 @@ namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
 use Alledia\Ospamanot\FormTags;
-use Exception;
 use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -56,7 +55,7 @@ class HoneyPot extends AbstractMethod
      * Check the timeGate/Honeypot fields if they exist
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function onAfterInitialise()
     {
