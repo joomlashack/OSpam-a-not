@@ -149,7 +149,7 @@ class HoneyPot extends AbstractMethod
 
                 $secretValue = time();
                 $honeyPot    = '';
-                if ($form->simple == false) {
+                if ($form->fieldCount > 1 || $form->buttonCount > 0) {
                     // Add the honeypot only if not a single input/no submit form
                     $secretValue .= '.' . $idx;
                     $honeyPot    = sprintf('<input type="text" name="%s" value=""/>', $name);
