@@ -151,17 +151,13 @@ abstract class AbstractMethod extends AbstractPlugin
     protected function block(?string $testName = null)
     {
         $stack  = debug_backtrace();
-        $caller = [];
-        $method = null;
+        $caller = null;
         if (empty($stack[1]['class']) == false) {
             $classParts = explode('\\', $stack[1]['class']);
-            $caller[]   = array_pop($classParts);
+            $caller     = array_pop($classParts);
         }
-
-        if (empty($stack[1]['function']) == false) {
-            $caller[] = $stack[1]['function'];
-            $method   = $stack[1]['function'];
-        }
+        $method   = $stack[1]['function'] ?? null;
+        $referrer = $this->app->input->server->get('HTTP_REFERER', '', 'URL');
 
         if ($testName == false) {
             $message = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
@@ -170,9 +166,9 @@ abstract class AbstractMethod extends AbstractPlugin
         }
 
         if ($this->params->get('logging', 0)) {
-            $category = 'osan.' . ($testName ?: 'generic');
+            $category = $caller . '.' . ($testName ?: 'generic');
             Log::addLogger(['text_file' => static::LOG_FILE], Log::ALL, [$category]);
-            Log::add(join('::', $caller), Log::NOTICE, $category);
+            Log::add($referrer, Log::NOTICE, $category);
         }
 
         if ($this->app->input->getCmd('format', 'html') == 'html') {
@@ -180,7 +176,7 @@ abstract class AbstractMethod extends AbstractPlugin
                 case 'onafterinitialise':
                 case 'onafterroute':
                 case 'onafterrender':
-                    $link = $this->app->input->server->get('HTTP_REFERER', '', 'URL') ?: Route::_('index.php');
+                    $link = $referrer ?: Route::_('index.php');
 
                     $this->app->enqueueMessage($message, 'error');
                     $this->app->redirect(Route::_($link));
