@@ -29,12 +29,12 @@ use Alledia\Ospamanot\Forms;
 use Exception;
 use JEventDispatcher;
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Dispatcher\Dispatcher;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\Dispatcher;
 use Joomla\Event\DispatcherInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -58,45 +58,42 @@ abstract class AbstractMethod extends AbstractPlugin
 
     /**
      * @param DispatcherInterface $subject
-     * @param array                       $config
+     * @param array               $config
      *
      * @return void
      */
     public static function registerMethods($subject, array $config): void
     {
-        $methodPath = __DIR__ . '/Method';
-        if (is_dir($methodPath)) {
-            try {
-                $files = Folder::files($methodPath, '\.php$');
+        try {
+            $files = Folder::files(__DIR__, '^(?!Abstract).*\.php$');
 
-                foreach ($files as $file) {
-                    $name      = basename($file, '.php');
-                    $className = '\\' . __NAMESPACE__ . '\\Method\\' . $name;
+            foreach ($files as $file) {
+                $name      = basename($file, '.php');
+                $className = '\\' . __NAMESPACE__ . '\\' . $name;
 
-                    if (class_exists($className)) {
-                        $config['name'] .= '_' . strtolower($name);
+                if (class_exists($className)) {
+                    $config['name'] .= '_' . strtolower($name);
 
-                        /** @var AbstractMethod $handler */
-                        $handler = new $className($subject, $config);
+                    /** @var AbstractMethod $handler */
+                    $handler = new $className($subject, $config);
 
-                        if ($subject instanceof JEventDispatcher) {
-                            // Joomla 3
-                            $subject->attach($handler);
+                    if ($subject instanceof JEventDispatcher) {
+                        // Joomla 3
+                        $subject->attach($handler);
 
-                        } elseif ($subject instanceof Dispatcher) {
-                            // Joomla 4
-                            // @TODO: Note this depends on J3 legacy support
-                            $handler->registerListeners();
-                        }
-
-                    } else {
-                        Factory::getApplication()->enqueueMessage('Class ' . $className . ' not found in ' . $file);
+                    } elseif ($subject instanceof Dispatcher) {
+                        // Joomla 4
+                        // @TODO: Note this depends on J3 legacy support
+                        $handler->registerListeners();
                     }
-                }
 
-            } catch (\Throwable $error) {
-                // ignore
+                } else {
+                    Factory::getApplication()->enqueueMessage('Class ' . $className . ' not found in ' . $file);
+                }
             }
+
+        } catch (\Throwable $error) {
+            // ignore
         }
     }
 
