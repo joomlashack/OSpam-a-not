@@ -24,8 +24,6 @@
 namespace Alledia\Ospamanot;
 
 // phpcs:disable PSR1.Files.SideEffects
-use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die();
 
@@ -77,30 +75,34 @@ final class Forms implements \Iterator
     {
         $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
         $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
+        $regexOther  = '#<\s*(textarea|select).*?>.*</\1>#';
         $formFilter  = Filters::getInstance();
 
         $this->forms = [];
         if (preg_match_all($regexForm, $text, $matches)) {
             foreach ($matches[0] as $idx => $form) {
-                $submit = 0;
-                $text   = 0;
+                $buttonCount = 0;
+                $fieldCount  = 0;
                 if (preg_match_all($regexFields, $form, $fields)) {
                     foreach ($fields[1] as $fdx => $field) {
                         $fieldType = $fields[2][$fdx];
 
-                        if ($fieldType == 'submit' || ($field == 'button' && $fieldType == 'submit')) {
-                            $submit++;
+                        if ($field == 'button' && $fieldType == 'submit') {
+                            $buttonCount++;
 
                         } elseif (in_array($fieldType, $this->textFields)) {
-                            $text++;
+                            $fieldCount++;
                         }
                     }
+                } elseif (preg_match_all($regexOther, $form, $other)) {
+                    $fieldCount += count($other[0]);
                 }
 
                 $form = new FormTags([
-                    'source' => $form,
-                    'endTag' => $matches[2][$idx],
-                    'simple' => $text <= 1 && $submit == 0
+                    'source'      => $form,
+                    'endTag'      => $matches[2][$idx],
+                    'fieldCount'  => $fieldCount,
+                    'buttonCount' => $buttonCount
                 ]);
                 if ($formFilter->exclude($form) == false) {
                     $this->forms[] = $form;

@@ -41,9 +41,14 @@ final class FormTags
     public $endTag = null;
 
     /**
-     * @var bool
+     * @var int
      */
-    public $simple = true;
+    public $fieldCount = 0;
+
+    /**
+     * @var int
+     */
+    public $buttonCount = 0;
 
     public function __construct($values)
     {
