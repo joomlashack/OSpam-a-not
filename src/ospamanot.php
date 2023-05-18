@@ -22,9 +22,11 @@
  */
 
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -60,6 +62,47 @@ if (include __DIR__ . '/include.php') {
             if ($this->app->isClient('site') && Factory::getUser()->guest) {
                 // We only care about guest users on the frontend
                 AbstractMethod::registerMethods($subject, $config);
+            }
+        }
+
+        /**
+         * @param Form   $form
+         * @param object $data
+         *
+         * @return void
+         */
+        public function onContentPrepareForm($form, $data): void
+        {
+            $formName = $form ? $form->getName() : null;
+            $folder   = $data->folder ?? null;
+            $plugin   = $data->element ?? null;
+
+            if (
+                $formName == 'com_plugins.plugin'
+                && $folder == $this->_type
+                && $plugin == $this->_name
+            ) {
+                $filterForms = Filters::getInstance()->getAdminForms();
+                foreach ($filterForms as $filterForm) {
+                    $this->mergeXML($form->getXml(), $filterForm);
+                }
+            }
+        }
+
+        /**
+         * @param SimpleXMLElement $base
+         * @param SimpleXMLElement $add
+         *
+         * @return void
+         */
+        protected function mergeXML(SimpleXMLElement $base, SimpleXMLElement $add)
+        {
+            $new = $base->addChild($add->getName());
+            foreach ($add->attributes() as $a => $b) {
+                $new[$a] = $b;
+            }
+            foreach ($add->children() as $child) {
+                $this->mergeXML($new, $child);
             }
         }
 

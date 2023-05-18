@@ -23,25 +23,26 @@
 
 namespace Alledia\Ospamanot\Filter;
 
-use Alledia\Ospamanot\FormFilter;
+use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\FormTags;
+use Joomla\CMS\Factory;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
 
 // phpcs:enable PSR1.Files.SideEffects
 
-abstract class AbstractFilterBase
+abstract class AbstractFilter
 {
     /**
-     * @var FormFilter
+     * @var Filters
      */
     protected $parent = null;
 
     /**
      * @return void
      */
-    public function __construct(FormFilter $parent)
+    public function __construct(Filters $parent)
     {
         $this->parent = $parent;
     }
@@ -55,6 +56,13 @@ abstract class AbstractFilterBase
     protected function getParam(string $key, $default = null)
     {
         return $this->parent->getParam($key, $default);
+    }
+
+    public function getAdminForm()
+    {
+        $class = new \ReflectionClass(static::class);
+
+        return $class->getFileName();
     }
 
     /**

@@ -24,7 +24,7 @@
 namespace Alledia\Ospamanot;
 
 // phpcs:disable PSR1.Files.SideEffects
-use Alledia\Ospamanot\Filter\AbstractFilterBase;
+use Alledia\Ospamanot\Filter\AbstractFilter;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Filesystem\Folder;
 use Joomla\Registry\Registry;
@@ -33,7 +33,7 @@ defined('_JEXEC') or die();
 // phpcs:enable PSR1.Files.SideEffects
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
-final class FormFilter
+final class Filters
 {
     /**
      * @var static
@@ -41,7 +41,7 @@ final class FormFilter
     protected static $instance = null;
 
     /**
-     * @var AbstractFilterBase[]
+     * @var AbstractFilter[]
      */
     protected $filters = [];
 
@@ -87,6 +87,24 @@ final class FormFilter
         }
 
         return $default;
+    }
+
+    /**
+     * @return \SimpleXMLElement[]
+     */
+    public function getAdminForms(): array
+    {
+        $xml = [];
+        foreach ($this->filters as $filter) {
+            $class = new \ReflectionClass($filter);
+            $path  = $class->getFileName();
+            $file  = dirname($path) . '/' . basename($path, '.php') . '.xml';
+            if (is_file($file)) {
+                $xml[] = simplexml_load_file($file);
+            }
+        }
+
+        return $xml;
     }
 
     /**

@@ -24,6 +24,9 @@
 namespace Alledia\Ospamanot;
 
 // phpcs:disable PSR1.Files.SideEffects
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
+
 defined('_JEXEC') or die();
 
 // phpcs:enable PSR1.Files.SideEffects
@@ -53,6 +56,11 @@ final class Forms implements \Iterator
      */
     protected $position = 0;
 
+    /**
+     * @param string $text
+     *
+     * @return void
+     */
     public function __construct(string $text)
     {
         $this->loadForms($text);
@@ -69,7 +77,7 @@ final class Forms implements \Iterator
     {
         $regexForm   = '#(<\s*form.*?>).*?(<\s*/\s*form\s*>)#sm';
         $regexFields = '#<\s*(input|button).*?type\s*=["\']([^\'"]*)[^>]*>#sm';
-        $formFilter  = FormFilter::getInstance();
+        $formFilter  = Filters::getInstance();
 
         $this->forms = [];
         if (preg_match_all($regexForm, $text, $matches)) {
