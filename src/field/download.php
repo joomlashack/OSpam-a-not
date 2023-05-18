@@ -22,7 +22,7 @@
  */
 
 // phpcs:disable PSR1.Files.SideEffects
-use Alledia\Ospamanot\AbstractMethod;
+use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\HTML\HTMLHelper;

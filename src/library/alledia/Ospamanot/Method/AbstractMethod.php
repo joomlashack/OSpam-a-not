@@ -21,20 +21,21 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Alledia\Ospamanot;
+namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Alledia\Ospamanot\Forms;
 use Exception;
 use JEventDispatcher;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Dispatcher\Dispatcher;
-use Joomla\Event\DispatcherInterface;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();

@@ -22,7 +22,7 @@
  */
 
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
-use Alledia\Ospamanot\AbstractMethod;
+use Alledia\Ospamanot\Method\AbstractMethod;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;

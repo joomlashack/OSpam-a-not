@@ -24,7 +24,6 @@
 namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
-use Alledia\Ospamanot\AbstractMethod;
 use Alledia\Ospamanot\FormTags;
 use Exception;
 use Joomla\CMS\Language\Text;
