@@ -25,6 +25,8 @@ namespace Alledia\Ospamanot;
 
 // phpcs:disable PSR1.Files.SideEffects
 use Alledia\Ospamanot\Filter\AbstractFilter;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Filesystem\Folder;
 use Joomla\Registry\Registry;
@@ -91,19 +93,48 @@ final class Filters
 
     /**
      * @return \SimpleXMLElement[]
+     * @throws \Exception
      */
     public function getAdminForms(): array
     {
+        $internalErrors = libxml_use_internal_errors(true);
+
         $xml = [];
         foreach ($this->filters as $filter) {
             $class = new \ReflectionClass($filter);
             $path  = $class->getFileName();
             $file  = dirname($path) . '/' . basename($path, '.php') . '.xml';
+
             if (is_file($file)) {
-                $xml[] = simplexml_load_file($file);
+                if ($fragment = simplexml_load_file($file)) {
+                    $xml[] = $fragment;
+
+                } else {
+                    $errors = array_map(
+                        function (\LibXMLError $error) {
+                            return Text::sprintf(
+                                'PLG_SYSTEM_OSPAMANOT_ERROR_FILTER_LIBXML',
+                                $error->line,
+                                $error->column,
+                                $error->message
+                            );
+                        },
+                        libxml_get_errors()
+                    );
+
+                    Factory::getApplication()->enqueueMessage(
+                        Text::sprintf(
+                            'PLG_SYSTEM_OSPAMANOT_ERROR_FILTER_XML',
+                            basename($file),
+                            join('<br>', $errors)
+                        ),
+                        'warning'
+                    );
+                }
             }
         }
 
+        libxml_use_internal_errors($internalErrors);
         return $xml;
     }
 

@@ -22,6 +22,7 @@
     ],
     "require"          : {
         "php"          : ">=7.2.5",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-libxml"   : "*"
     }
 }
