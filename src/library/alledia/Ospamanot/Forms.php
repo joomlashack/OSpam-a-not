@@ -80,10 +80,10 @@ final class Forms implements \Iterator
 
         $this->forms = [];
         if (preg_match_all($regexForm, $text, $matches)) {
-            foreach ($matches[0] as $idx => $form) {
+            foreach ($matches[0] as $idx => $formSource) {
                 $buttonCount = 0;
                 $fieldCount  = 0;
-                if (preg_match_all($regexFields, $form, $fields)) {
+                if (preg_match_all($regexFields, $formSource, $fields)) {
                     foreach ($fields[1] as $fdx => $field) {
                         $fieldType = $fields[2][$fdx];
 
@@ -94,18 +94,19 @@ final class Forms implements \Iterator
                             $fieldCount++;
                         }
                     }
-                } elseif (preg_match_all($regexOther, $form, $other)) {
+                } elseif (preg_match_all($regexOther, $formSource, $other)) {
                     $fieldCount += count($other[0]);
                 }
 
                 if ($fieldCount > 1 || $buttonCount > 0) {
                     // Form has more than one entry field or contains a submit button
                     $form = new FormTags([
-                        'source'      => $form,
+                        'source'      => $formSource,
                         'endTag'      => $matches[2][$idx],
                         'fieldCount'  => $fieldCount,
                         'buttonCount' => $buttonCount
                     ]);
+
                     if ($formFilter->exclude($form) == false) {
                         $this->forms[] = $form;
                     }
