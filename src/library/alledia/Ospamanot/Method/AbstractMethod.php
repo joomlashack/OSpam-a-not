@@ -167,8 +167,17 @@ abstract class AbstractMethod extends AbstractPlugin
 
         if ($this->params->get('logging', 0)) {
             $category = $caller . '.' . ($testName ?: 'generic');
+            $context  = join(
+                '.',
+                array_filter(
+                    [
+                        $this->app->input->getCmd('option'),
+                        $this->app->input->getCmd('task', $this->app->input->getCmd('view'))
+                    ]
+                )
+            );
             Log::addLogger(['text_file' => static::LOG_FILE], Log::ALL, [$category]);
-            Log::add($referrer, Log::NOTICE, $category);
+            Log::add($context . ' - ' . Uri::getInstance()->getPath(), Log::NOTICE, $category);
         }
 
         if ($this->app->input->getCmd('format', 'html') == 'html') {
