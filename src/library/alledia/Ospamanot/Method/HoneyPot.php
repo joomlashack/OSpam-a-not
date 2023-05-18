@@ -57,7 +57,7 @@ class HoneyPot extends AbstractMethod
      * @return void
      * @throws \Exception
      */
-    public function onAfterInitialise()
+    public function onAfterRoute()
     {
         $method = strtolower($this->app->input->getMethod());
         if (in_array($method, ['get', 'post']) == false) {
