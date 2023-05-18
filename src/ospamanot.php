@@ -28,6 +28,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
+use Joomla\Registry\Registry;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
@@ -66,21 +67,53 @@ if (include __DIR__ . '/include.php') {
         }
 
         /**
-         * @param Form   $form
-         * @param object $data
+         * @param Form  $form
+         * @param array $data
+         *
+         * @return void
+         * @deprecated Eventually should move to onContentValidateData
+         */
+        public function onUserBeforeDataValidation($form, $data)
+        {
+            $this->onContentValidateData($form, $data);
+        }
+
+        /**
+         * @param Form         $form
+         * @param array|object $data
+         *
+         * @return void
+         */
+        public function onContentValidateData($form, $data): void
+        {
+            $this->updateForm($form, $data);
+        }
+
+        /**
+         * @param Form         $form
+         * @param object|array $data
          *
          * @return void
          */
         public function onContentPrepareForm($form, $data): void
         {
-            $formName = $form ? $form->getName() : null;
-            $folder   = $data->folder ?? null;
-            $plugin   = $data->element ?? null;
+            $this->updateForm($form, $data);
+        }
+
+        /**
+         * @param Form         $form
+         * @param object|array $data
+         *
+         * @return void
+         */
+        protected function updateForm(Form $form, $data): void
+        {
+            $data = new Registry($data);
 
             if (
-                $formName == 'com_plugins.plugin'
-                && $folder == $this->_type
-                && $plugin == $this->_name
+                $form->getName() == 'com_plugins.plugin'
+                && $data->get('folder') == $this->_type
+                && $data->get('element') == $this->_name
             ) {
                 $filterForms = Filters::getInstance()->getAdminForms();
                 foreach ($filterForms as $filterForm) {
@@ -101,8 +134,13 @@ if (include __DIR__ . '/include.php') {
             foreach ($add->attributes() as $a => $b) {
                 $new[$a] = $b;
             }
-            foreach ($add->children() as $child) {
-                $this->mergeXML($new, $child);
+            if ($add->count()) {
+                foreach ($add->children() as $child) {
+                    $this->mergeXML($new, $child);
+                }
+
+            } else {
+                $new[0] = $add[0];
             }
         }
 
