@@ -98,14 +98,17 @@ final class Forms implements \Iterator
                     $fieldCount += count($other[0]);
                 }
 
-                $form = new FormTags([
-                    'source'      => $form,
-                    'endTag'      => $matches[2][$idx],
-                    'fieldCount'  => $fieldCount,
-                    'buttonCount' => $buttonCount
-                ]);
-                if ($formFilter->exclude($form) == false) {
-                    $this->forms[] = $form;
+                if ($fieldCount > 1 || $buttonCount > 0) {
+                    // Form has more than one entry field or contains a submit button
+                    $form = new FormTags([
+                        'source'      => $form,
+                        'endTag'      => $matches[2][$idx],
+                        'fieldCount'  => $fieldCount,
+                        'buttonCount' => $buttonCount
+                    ]);
+                    if ($formFilter->exclude($form) == false) {
+                        $this->forms[] = $form;
+                    }
                 }
             }
         }
