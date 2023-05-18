@@ -25,7 +25,6 @@ namespace Alledia\Ospamanot\Filter;
 
 use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\FormTags;
-use Joomla\CMS\Factory;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
@@ -71,4 +70,11 @@ abstract class AbstractFilter
      * @return bool
      */
     abstract public function exclude(FormTags $form): bool;
+
+    /**
+     * @param string $context
+     *
+     * @return bool
+     */
+    abstract public function allow(string $context): bool;
 }

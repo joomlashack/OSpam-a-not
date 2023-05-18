@@ -25,6 +25,7 @@ namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\Forms;
 use Exception;
 use JEventDispatcher;
@@ -150,6 +151,20 @@ abstract class AbstractMethod extends AbstractPlugin
      */
     protected function block(?string $testName = null)
     {
+        $context = join(
+            '.',
+            array_filter(
+                [
+                    $this->app->input->getCmd('option'),
+                    $this->app->input->getCmd('task', $this->app->input->getCmd('view'))
+                ]
+            )
+        );
+        if (Filters::getInstance()->allow($context)) {
+            return;
+        }
+
+
         $stack  = debug_backtrace();
         $caller = null;
         if (empty($stack[1]['class']) == false) {
@@ -167,15 +182,6 @@ abstract class AbstractMethod extends AbstractPlugin
 
         if ($this->params->get('logging', 0)) {
             $category = $caller . '.' . ($testName ?: 'generic');
-            $context  = join(
-                '.',
-                array_filter(
-                    [
-                        $this->app->input->getCmd('option'),
-                        $this->app->input->getCmd('task', $this->app->input->getCmd('view'))
-                    ]
-                )
-            );
             Log::addLogger(['text_file' => static::LOG_FILE], Log::ALL, [$category]);
             Log::add($context . ' - ' . Uri::getInstance()->getPath(), Log::NOTICE, $category);
         }

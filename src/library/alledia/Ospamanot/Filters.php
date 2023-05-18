@@ -152,4 +152,20 @@ final class Filters
     {
         return $this->exclude($form) == false;
     }
+
+    /**
+     * @param string $context
+     *
+     * @return bool
+     */
+    public function allow(string $context): bool
+    {
+        foreach ($this->filters as $filter) {
+            if ($filter->allow($context)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
