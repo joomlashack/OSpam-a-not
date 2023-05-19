@@ -86,6 +86,6 @@
     </config>
 
     <updateservers>
-        <server type="extension" priority="1" name="OSpam-a-not"><![CDATA[https://deploy.ostraining.com/client/update/free/stable/plg_system_ospamanot]]></server>
+        <server type="extension" priority="1" name="OSpam-a-not Free"><![CDATA[https://deploy.ostraining.com/client/update/free/stable/plg_system_ospamanot]]></server>
     </updateservers>
 </extension>
