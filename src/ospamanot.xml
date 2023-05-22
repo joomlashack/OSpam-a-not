@@ -79,7 +79,7 @@
                 <field type="customfooter"
                        name="customfooter"
                        media="plg_system_ospamanot"
-                       showgoproad="0"
+                       showgoproad="https://www.joomlashack.com/joomla-extensions/ospam-a-not/"
                        jedurl="https://extensions.joomla.org/extension/ospam-a-not"/>
             </fieldset>
         </fields>
