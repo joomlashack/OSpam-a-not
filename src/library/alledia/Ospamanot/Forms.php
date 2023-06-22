@@ -130,6 +130,7 @@ final class Forms implements \Iterator
     /**
      * @return ?FormTags
      */
+    #[\ReturnTypeWillChange] 
     public function next(): ?FormTags
     {
         $this->position++;
