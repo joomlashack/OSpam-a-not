@@ -130,14 +130,9 @@ final class Forms implements \Iterator
     /**
      * @inheritDoc
      */
-    public function next(): ?FormTags
+    public function next(): void
     {
         $this->position++;
-        if ($this->position < count($this->forms)) {
-            return $this->forms[$this->position];
-        }
-
-        return null;
     }
 
     /**
