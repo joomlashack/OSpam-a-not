@@ -36,7 +36,7 @@ class PlgsystemospamanotInstallerScript extends AbstractScript
     /**
      * @inheritDoc
      */
-    protected function customPostFlight($type, $parent)
+    protected function customPostFlight($type, $parent): void
     {
         if (stripos($type, 'install') === false) {
             $this->reorderThisPlugin();
