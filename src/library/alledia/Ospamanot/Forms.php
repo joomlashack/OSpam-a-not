@@ -46,7 +46,7 @@ final class Forms implements \Iterator
         'search',
         'tel',
         'text',
-        'url'
+        'url',
     ];
 
     /**
@@ -104,7 +104,7 @@ final class Forms implements \Iterator
                         'source'      => $formSource,
                         'endTag'      => $matches[2][$idx],
                         'fieldCount'  => $fieldCount,
-                        'buttonCount' => $buttonCount
+                        'buttonCount' => $buttonCount,
                     ]);
 
                     if ($formFilter->exclude($form) == false) {
@@ -116,7 +116,7 @@ final class Forms implements \Iterator
     }
 
     /**
-     * @return ?FormTags
+     * @inheritDoc
      */
     public function current(): ?FormTags
     {
@@ -128,7 +128,7 @@ final class Forms implements \Iterator
     }
 
     /**
-     * @return ?FormTags
+     * @inheritDoc
      */
     public function next(): ?FormTags
     {
@@ -141,7 +141,7 @@ final class Forms implements \Iterator
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function key(): int
     {
@@ -149,7 +149,7 @@ final class Forms implements \Iterator
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function valid(): bool
     {
@@ -157,7 +157,7 @@ final class Forms implements \Iterator
     }
 
     /**
-     * @return void
+     * @inheritDoc
      */
     public function rewind(): void
     {
