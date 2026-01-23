@@ -44,6 +44,7 @@ try {
 
         return false;
     }
+    unset($frameworkPath);
 
     if (defined('ALLEDIA_FRAMEWORK_LOADED') && !defined('OSPAMANOT_LOADED')) {
         define('OSPAMANOT_ROOT', __DIR__);
