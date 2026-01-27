@@ -49,8 +49,19 @@ class HoneyPot extends AbstractMethod
         'your_name_here'    => 0,
         'my_address'        => 0,
         'your_address'      => 0,
-        'your_address_here' => 0
+        'your_address_here' => 0,
     ];
+
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onAfterRoute'  => 'onAfterRoute',
+            'onAfterRender' => 'onAfterRender',
+        ];
+    }
 
     /**
      * Check the timeGate/Honeypot fields if they exist
@@ -117,6 +128,8 @@ class HoneyPot extends AbstractMethod
 
             if ($doc->getType() == 'html') {
                 $body = $this->app->getBody();
+
+                $body = str_replace('</body>', '<h1>RENDER</h1></body>', $body);
 
                 if ($forms = $this->getForms($body)) {
                     foreach ($forms as $form) {

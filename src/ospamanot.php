@@ -22,169 +22,214 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Alledia\Framework\Joomla\Extension\AbstractPlugin;
+use Alledia\Ospamanot\AbstractPlugin;
 use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\Method\AbstractMethod;
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
+use Joomla\Event\Event;
 use Joomla\Registry\Registry;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
+
 // phpcs:enable PSR1.Files.SideEffects
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
-if (include __DIR__ . '/include.php') {
-    class PlgSystemOspamanot extends AbstractPlugin
+if ((include __DIR__ . '/include.php') == false) {
+    return;
+}
+
+class PlgSystemOspamanot extends AbstractPlugin
+{
+    /**
+     * @inheritdoc
+     */
+    protected $namespace = 'Ospamanot';
+
+    /**
+     * @inheritdoc
+     */
+    protected $autoloadLanguage = true;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct($subject, $config = [])
     {
-        /**
-         * @inheritdoc
-         */
-        protected $namespace = 'Ospamanot';
+        parent::__construct($subject, $config);
 
-        /**
-         * @inheritdoc
-         */
-        protected $autoloadLanguage = true;
+        $this->init();
+        AbstractMethod::registerMethods($subject, $config);
+    }
 
-        /**
-         * @var CMSApplication
-         */
-        protected $app = null;
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedEvents(): array
+    {
+        $events = [
+            'onContentBeforeValidateData' => 'onContentBeforeValidateData',
+            'onContentValidateData'       => 'onContentValidateData',
+            'onContentPrepareForm'        => 'onContentPrepareForm',
+        ];
 
-        /**
-         * @inheritDoc
-         */
-        public function __construct($subject, $config = [])
-        {
-            parent::__construct($subject, $config);
+        return $events;
+    }
 
-            if ($this->app->isClient('site') && Factory::getUser()->guest) {
-                // We only care about guest users on the frontend
-                AbstractMethod::registerMethods($subject, $config);
+    /**
+     * @param Form  $form
+     * @param array $data
+     *
+     * @return void
+     * @deprecated Eventually should move to onContentBeforeValidateData
+     */
+    public function onContentBeforeValidateData($form, $data = null)
+    {
+        $this->parseParameters($form, $data);
+
+        $this->onContentValidateData($form, $data);
+    }
+
+    /**
+     * For legacy implementation
+     *
+     * @param Form         $form
+     * @param array|object $data
+     *
+     * @return void
+     */
+    public function onUserBeforeDataValidation($form, $data): void
+    {
+        $this->onContentValidateData($form, $data);
+    }
+
+    /**
+     * @param Form         $form
+     * @param array|object $data
+     *
+     * @return void
+     */
+    public function onContentValidateData($form, $data = null): void
+    {
+        $this->parseParameters($form, $data);
+
+        $this->updateForm($form, $data);
+    }
+
+    /**
+     * @param Form|Event   $form
+     * @param object|array $data
+     *
+     * @return void
+     */
+    public function onContentPrepareForm($form, $data = null): void
+    {
+        $this->parseParameters($form, $data);
+
+        $this->updateForm($form, $data);
+    }
+
+    /**
+     * @param Form         $form
+     * @param object|array $data
+     *
+     * @return void
+     */
+    protected function updateForm(Form $form, $data): void
+    {
+        $data = new Registry($data);
+
+        if (
+            $form->getName() == 'com_plugins.plugin'
+            && $data->get('folder') == $this->_type
+            && $data->get('element') == $this->_name
+        ) {
+            $filterForms = Filters::getInstance()->getAdminForms();
+            foreach ($filterForms as $filterForm) {
+                $this->mergeXML($form->getXml(), $filterForm);
             }
         }
+    }
 
-        /**
-         * @param Form  $form
-         * @param array $data
-         *
-         * @return void
-         * @deprecated Eventually should move to onContentValidateData
-         */
-        public function onUserBeforeDataValidation($form, $data)
-        {
-            $this->onContentValidateData($form, $data);
+    /**
+     * @param SimpleXMLElement $base
+     * @param SimpleXMLElement $add
+     *
+     * @return void
+     */
+    protected function mergeXML(SimpleXMLElement $base, SimpleXMLElement $add)
+    {
+        $new = $base->addChild($add->getName());
+        foreach ($add->attributes() as $a => $b) {
+            $new[$a] = $b;
         }
-
-        /**
-         * @param Form         $form
-         * @param array|object $data
-         *
-         * @return void
-         */
-        public function onContentValidateData($form, $data): void
-        {
-            $this->updateForm($form, $data);
-        }
-
-        /**
-         * @param Form         $form
-         * @param object|array $data
-         *
-         * @return void
-         */
-        public function onContentPrepareForm($form, $data): void
-        {
-            $this->updateForm($form, $data);
-        }
-
-        /**
-         * @param Form         $form
-         * @param object|array $data
-         *
-         * @return void
-         */
-        protected function updateForm(Form $form, $data): void
-        {
-            $data = new Registry($data);
-
-            if (
-                $form->getName() == 'com_plugins.plugin'
-                && $data->get('folder') == $this->_type
-                && $data->get('element') == $this->_name
-            ) {
-                $filterForms = Filters::getInstance()->getAdminForms();
-                foreach ($filterForms as $filterForm) {
-                    $this->mergeXML($form->getXml(), $filterForm);
-                }
-            }
-        }
-
-        /**
-         * @param SimpleXMLElement $base
-         * @param SimpleXMLElement $add
-         *
-         * @return void
-         */
-        protected function mergeXML(SimpleXMLElement $base, SimpleXMLElement $add)
-        {
-            $new = $base->addChild($add->getName());
-            foreach ($add->attributes() as $a => $b) {
-                $new[$a] = $b;
-            }
-            if ($add->count()) {
-                foreach ($add->children() as $child) {
-                    $this->mergeXML($new, $child);
-                }
-
-            } else {
-                $new[0] = $add[0];
-            }
-        }
-
-        /**
-         * @return void
-         */
-        public function onAjaxOsanDownload()
-        {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-
-            $entries  = AbstractMethod::getLogEntries();
-            $fileName = basename(AbstractMethod::LOG_FILE, '.php');
-
-            header('Content-Type: text/plain');
-            header(sprintf('Content-Disposition: attachment; filename="%s"', $fileName));
-
-            echo join('', $entries);
-
-            jexit();
-        }
-
-        /**
-         * @return string
-         */
-        public function onAjaxOsanClear(): string
-        {
-            $errorReporting = error_reporting(-1);
-            $displayErrors  = ini_set('display_errors', 1);
-            ob_start();
-
-            $logPath = $this->app->get('log_path') . '/' . AbstractMethod::LOG_FILE;
-            if (is_file($logPath)) {
-                unlink($logPath);
+        if ($add->count()) {
+            foreach ($add->children() as $child) {
+                $this->mergeXML($new, $child);
             }
 
-            $errors = ob_get_contents();
-            ob_end_clean();
+        } else {
+            $new[0] = $add[0];
+        }
+    }
 
-            error_reporting($errorReporting);
-            ini_set('display_errors', $displayErrors);
+    /**
+     * @return void
+     */
+    public function onAjaxOsanDownload(): void
+    {
+        error_reporting(0);
+        ini_set('display_errors', 0);
 
-            return $errors ?: Text::_('PLG_SYSTEM_OSPAMANOT_LOG_CLEAR_SUCCESS');
+        $entries  = AbstractMethod::getLogEntries();
+        $fileName = basename(AbstractMethod::LOG_FILE, '.php');
+
+        header('Content-Type: text/plain');
+        header(sprintf('Content-Disposition: attachment; filename="%s"', $fileName));
+
+        echo join('', $entries);
+
+        jexit();
+    }
+
+    /**
+     * @return string
+     */
+    public function onAjaxOsanClear(): string
+    {
+        $errorReporting = error_reporting(-1);
+        $displayErrors  = ini_set('display_errors', 1);
+        ob_start();
+
+        $logPath = $this->app->get('log_path') . '/' . AbstractMethod::LOG_FILE;
+        if (is_file($logPath)) {
+            unlink($logPath);
+        }
+
+        $errors = ob_get_contents();
+        ob_end_clean();
+
+        error_reporting($errorReporting);
+        ini_set('display_errors', $displayErrors);
+
+        return $errors ?: Text::_('PLG_SYSTEM_OSPAMANOT_LOG_CLEAR_SUCCESS');
+    }
+
+    /**
+     * Convert Newer Event class into legacy parameters
+     * @param ...$arguments
+     *
+     * @return void
+     */
+    protected function parseParameters(&...$arguments): void
+    {
+        $event = $arguments[0] ?? null;
+        if ($event && $event instanceof Event) {
+            $targets = array_values($event->getArguments());
+            foreach ($targets as $idx => $target) {
+                $arguments[$idx] = $target;
+            }
         }
     }
 }

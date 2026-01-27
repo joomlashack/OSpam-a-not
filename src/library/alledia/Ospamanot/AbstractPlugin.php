@@ -3,7 +3,7 @@
  * @package   OSpam-a-not
  * @contact   www.joomlashack.com, help@joomlashack.com
  * @copyright 2025 Joomlashack.com. All rights reserved
- * @license   https://www.gnu.org/licenses/gpl.html GNU/GPL 
+ * @license   https://www.gnu.org/licenses/gpl.html GNU/GPL
  *
  * This file is part of OSpam-a-not.
  *
@@ -21,9 +21,21 @@
  * along with OSpam-a-not.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+namespace Alledia\Ospamanot;
+
+use Alledia\Framework\Joomla\Event\SubscriberInterface;
+use Alledia\Framework\Joomla\Extension\AbstractPlugin as AllediaPlugin;
+use Joomla\CMS\Application\CMSApplication;
+
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
 // phpcs:enable PSR1.Files.SideEffects
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
-
+abstract class AbstractPlugin extends AllediaPlugin implements SubscriberInterface
+{
+    /**
+     * @var CMSApplication
+     */
+    protected $app = null;
+}

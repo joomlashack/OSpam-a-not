@@ -25,6 +25,7 @@
 namespace Alledia\Ospamanot\Method;
 
 use Alledia\Framework\Factory;
+use Alledia\Framework\Joomla\Event\SubscriberInterface;
 use Alledia\Framework\Joomla\Extension\AbstractPlugin;
 use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\Forms;
@@ -34,24 +35,25 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Event\Dispatcher;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface as JoomlaSubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
 
 // phpcs:enable PSR1.Files.SideEffects
 
-abstract class AbstractMethod extends AbstractPlugin
+abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterface
 {
     public const LOG_FILE = 'ospamanot.log.php';
 
     /**
      * @var Forms[]
      */
-    protected $forms = [];
+    protected array $forms = [];
 
     /**
      * @var CMSApplication
@@ -59,12 +61,12 @@ abstract class AbstractMethod extends AbstractPlugin
     protected $app = null;
 
     /**
-     * @param DispatcherInterface $subject
-     * @param array               $config
+     * @param ?JEventDispatcher|DispatcherInterface $subject
+     * @param ?array                                $config
      *
-     * @return void
+     * @return array
      */
-    public static function registerMethods($subject, array $config): void
+    public static function registerMethods($subject = null, ?array $config = null): void
     {
         try {
             $files = Folder::files(__DIR__, '^(?!Abstract).*\.php$');
@@ -75,18 +77,19 @@ abstract class AbstractMethod extends AbstractPlugin
 
                 if (class_exists($className)) {
                     $config['name'] .= '_' . strtolower($name);
+                    $config['type'] = 'ospamanot_method';
 
                     /** @var AbstractMethod $handler */
-                    $handler = new $className($subject, $config);
+                    if (in_array(JoomlaSubscriberInterface::class, class_implements($className))) {
+                        // J4+ registration
+                        $handler = new $className($config);
+                        $subject->addSubscriber($handler);
 
-                    if ($subject instanceof JEventDispatcher) {
-                        // Joomla 3
+                    } else {
+                        // Legacy registration
+
+                        $handler = new $className($subject, $config);
                         $subject->attach($handler);
-
-                    } elseif ($subject instanceof Dispatcher) {
-                        // Joomla 4
-                        // @TODO: Note this depends on J3 legacy support
-                        $handler->registerListeners();
                     }
 
                 } else {
@@ -95,7 +98,7 @@ abstract class AbstractMethod extends AbstractPlugin
             }
 
         } catch (\Throwable $error) {
-            // ignore
+            Factory::getApplication()->enqueueMessage($error->getMessage(), 'error');
         }
     }
 
@@ -157,7 +160,7 @@ abstract class AbstractMethod extends AbstractPlugin
             array_filter(
                 [
                     $this->app->input->getCmd('option'),
-                    $this->app->input->getCmd('task', $this->app->input->getCmd('view'))
+                    $this->app->input->getCmd('task', $this->app->input->getCmd('view')),
                 ]
             )
         );
