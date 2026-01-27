@@ -32,7 +32,7 @@ use Alledia\Ospamanot\Forms;
 use Exception;
 use JEventDispatcher;
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Filesystem\Folder;
+use Joomla\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
