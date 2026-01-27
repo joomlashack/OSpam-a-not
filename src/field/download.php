@@ -30,6 +30,10 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die();
+
+if ((include JPATH_PLUGINS . '/system/ospamanot/include.php') == false) {
+    return;
+}
 // phpcs:enable PSR1.Files.SideEffects
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 
