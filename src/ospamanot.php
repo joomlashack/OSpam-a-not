@@ -25,6 +25,7 @@
 use Alledia\Ospamanot\AbstractPlugin;
 use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\Method\AbstractMethod;
+use Joomla\CMS\Event\Plugin\AjaxEvent;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\Event\Event;
@@ -68,13 +69,13 @@ class PlgSystemOspamanot extends AbstractPlugin
      */
     public static function getSubscribedEvents(): array
     {
-        $events = [
+        return [
             'onContentBeforeValidateData' => 'onContentBeforeValidateData',
             'onContentValidateData'       => 'onContentValidateData',
             'onContentPrepareForm'        => 'onContentPrepareForm',
+            'onAjaxOsanDownload'          => 'onAjaxOsanDownload',
+            'onAjaxOsanClear'             => 'onAjaxOsanClear',
         ];
-
-        return $events;
     }
 
     /**
@@ -196,7 +197,7 @@ class PlgSystemOspamanot extends AbstractPlugin
     /**
      * @return string
      */
-    public function onAjaxOsanClear(): string
+    public function onAjaxOsanClear(?AjaxEvent $event = null): ?string
     {
         $errorReporting = error_reporting(-1);
         $displayErrors  = ini_set('display_errors', 1);
@@ -213,7 +214,13 @@ class PlgSystemOspamanot extends AbstractPlugin
         error_reporting($errorReporting);
         ini_set('display_errors', $displayErrors);
 
-        return $errors ?: Text::_('PLG_SYSTEM_OSPAMANOT_LOG_CLEAR_SUCCESS');
+        $result = $errors ?: Text::_('PLG_SYSTEM_OSPAMANOT_LOG_CLEAR_SUCCESS');
+        if ($event) {
+            $event->updateEventResult([$result]);
+            return null;
+        }
+
+        return $result;
     }
 
     /**
