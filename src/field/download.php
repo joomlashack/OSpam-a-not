@@ -129,8 +129,11 @@ class OsanFormFieldDownload extends FormField
 
     protected function getClearScript(string $id): string
     {
+        HTMLHelper::_('jquery.framework');
+
         Text::script('PLG_SYSTEM_OSPAMANOT_ERROR_UNKNOWN');
         Text::script('PLG_SYSTEM_OSPAMANOT_ERROR_SERVER');
+        Text::script('PLG_SYSTEM_OSPAMANOT_ERROR_NORESPONSE');
 
         return <<<JSCRIPT
 ;jQuery(document).ready(function($) {
@@ -144,8 +147,6 @@ class OsanFormFieldDownload extends FormField
             format: 'json'
         })
         .always(function(response, status) {
-            console.log(response);
-            
             if (status === 'success') {
                 if (response.success) {
                     let message = response.data || [Joomla.JText._('PLG_SYSTEM_OSPAMANOT_ERROR_NORESPONSE')];
