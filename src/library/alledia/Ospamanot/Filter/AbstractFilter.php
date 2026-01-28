@@ -40,7 +40,7 @@ abstract class AbstractFilter
     protected $parent = null;
 
     /**
-     * @return void
+     * @param Filters $parent
      */
     public function __construct(Filters $parent)
     {
@@ -58,7 +58,10 @@ abstract class AbstractFilter
         return $this->parent->getParam($key, $default);
     }
 
-    public function getAdminForm()
+    /**
+     * @return string
+     */
+    public function getAdminForm(): string
     {
         $class = new \ReflectionClass(static::class);
 
