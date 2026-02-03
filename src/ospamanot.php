@@ -191,7 +191,7 @@ class PlgSystemOspamanot extends AbstractPlugin
 
         echo join('', $entries);
 
-        jexit();
+        $this->app->close();
     }
 
     /**
