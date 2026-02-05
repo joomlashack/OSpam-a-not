@@ -128,9 +128,6 @@ class HoneyPot extends AbstractMethod
 
             if ($doc->getType() == 'html') {
                 $body = $this->app->getBody();
-
-                $body = str_replace('</body>', '<h1>RENDER</h1></body>', $body);
-
                 if ($forms = $this->getForms($body)) {
                     foreach ($forms as $form) {
                         $this->addHiddenFields($body, $form);
