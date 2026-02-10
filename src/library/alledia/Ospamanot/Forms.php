@@ -145,6 +145,14 @@ final class Forms implements \Iterator
     }
 
     /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->forms);
+    }
+
+    /**
      * @inheritDoc
      */
     public function valid(): bool
