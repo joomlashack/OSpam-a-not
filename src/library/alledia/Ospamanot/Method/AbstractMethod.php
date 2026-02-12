@@ -32,14 +32,12 @@ use Alledia\Ospamanot\Forms;
 use Exception;
 use JEventDispatcher;
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Event\SubscriberInterface as JoomlaSubscriberInterface;
+use Joomla\Filesystem\Folder;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
@@ -56,9 +54,15 @@ abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterf
     protected array $forms = [];
 
     /**
+     * @inheritdoc
      * @var CMSApplication
      */
     protected $app = null;
+
+    /**
+     * @inheritdoc
+     */
+    protected $autoloadLanguage = true;
 
     /**
      * @param ?JEventDispatcher|DispatcherInterface $subject
@@ -79,21 +83,40 @@ abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterf
                     $config['name'] .= '_' . strtolower($name);
                     $config['type'] = 'ospamanot_method';
 
+                    $reflection = new \ReflectionClass($className);
+
                     /** @var AbstractMethod $handler */
-                    if (in_array(JoomlaSubscriberInterface::class, class_implements($className))) {
-                        // J4+ registration
-                        $handler = new $className($config);
-                        $subject->addSubscriber($handler);
+                    switch ($reflection->getConstructor()->getNumberOfParameters()) {
+                        case 1:
+                            // Updated CMSPlugin class
+                            $handler = new $className($config);
+                            $subject->addSubscriber($handler);
+                            break;
 
-                    } else {
-                        // Legacy registration
+                        case 2:
+                            // Legacy registration
+                            $handler = new $className($subject, $config);
+                            if (is_callable([$subject, 'attach'])) {
+                                $subject->attach($handler);
+                            } else {
+                                $subject->addSubscriber($handler);
+                            }
 
-                        $handler = new $className($subject, $config);
-                        $subject->attach($handler);
+                            break;
+
+                        default:
+                            Factory::getApplication()->enqueueMessage(
+                                Text::sprintf('PLG_SYSTEM_OSPAMANOT_ERROR_METHOD_SIGNATURE', $className),
+                                'error'
+                            );
+                            break;
                     }
 
                 } else {
-                    Factory::getApplication()->enqueueMessage('Class ' . $className . ' not found in ' . $file);
+                    Factory::getApplication()->enqueueMessage(
+                        Text::sprintf('PLG_SYSTEM_OSPAMANOT_ERROR_METHOD_NOTFOUND', $className, $file),
+                        'error'
+                    );
                 }
             }
 
