@@ -35,7 +35,13 @@ defined('_JEXEC') or die();
 abstract class AbstractPlugin extends AllediaPlugin implements SubscriberInterface
 {
     /**
+     * @inheritdoc
      * @var CMSApplication
      */
     protected $app = null;
+
+    /**
+     * @inheritdoc
+     */
+    protected $autoloadLanguage = true;
 }

@@ -49,11 +49,6 @@ class PlgSystemOspamanot extends AbstractPlugin
     protected $namespace = 'Ospamanot';
 
     /**
-     * @inheritdoc
-     */
-    protected $autoloadLanguage = true;
-
-    /**
      * @inheritDoc
      */
     public function __construct($subject, $config = [])
