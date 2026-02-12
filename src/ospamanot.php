@@ -22,6 +22,7 @@
  * along with OSpam-a-not.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Alledia\Framework\Factory;
 use Alledia\Ospamanot\AbstractPlugin;
 use Alledia\Ospamanot\Filters;
 use Alledia\Ospamanot\Method\AbstractMethod;
@@ -56,6 +57,10 @@ class PlgSystemOspamanot extends AbstractPlugin
         parent::__construct($subject, $config);
 
         $this->init();
+
+        // Language isn't auto loaded yet in Joomla 6+
+        Factory::getLanguage()->load('plg_' . $this->_type . '_' . $this->_name, __DIR__);
+
         AbstractMethod::registerMethods($subject, $config);
     }
 
