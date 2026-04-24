@@ -71,15 +71,17 @@ class HoneyPot extends AbstractMethod
      */
     public function onAfterRoute()
     {
-        $method = strtolower($this->app->input->getMethod());
+        $input = Factory::getInput($this->app);
+
+        $method = strtolower($input->getMethod());
         if (in_array($method, ['get', 'post']) == false) {
             return;
         }
 
         $secret = $this->getHashedFieldName();
-        if ($this->app->input->exists($secret)) {
+        if ($input->exists($secret)) {
             $failMessage = null;
-            $timeKey     = $this->app->input->getString($secret);
+            $timeKey     = $input->getString($secret);
 
             if (preg_match('/^\d+(?:\.\d)?$/', $timeKey)) {
                 // Our secret field was added, check response time

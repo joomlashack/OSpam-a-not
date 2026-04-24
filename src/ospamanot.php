@@ -58,7 +58,7 @@ class PlgSystemOspamanot extends AbstractPlugin
 
         $this->init();
 
-        // Language isn't auto loaded yet in Joomla 6+
+        // Language isn't autoloaded yet in Joomla 6+
         Factory::getLanguage()->load('plg_' . $this->_type . '_' . $this->_name, __DIR__);
 
         AbstractMethod::registerMethods($subject, $config);

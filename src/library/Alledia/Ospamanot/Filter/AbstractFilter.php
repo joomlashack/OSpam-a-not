@@ -37,7 +37,7 @@ abstract class AbstractFilter
     /**
      * @var Filters
      */
-    protected $parent = null;
+    protected Filters $parent;
 
     /**
      * @param Filters $parent

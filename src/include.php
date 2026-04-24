@@ -28,6 +28,7 @@ use Joomla\CMS\Factory;
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die();
 
+// @TODO: Will require update when input property goes away
 if (Factory::getApplication()->input->getCmd('option') == 'com_installer') {
     // Avoid conflicts during installation
     return false;

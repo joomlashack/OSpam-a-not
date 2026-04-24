@@ -178,12 +178,14 @@ abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterf
      */
     protected function block(?string $testName = null)
     {
+        $input = Factory::getInput($this->app);
+
         $context = join(
             '.',
             array_filter(
                 [
-                    $this->app->input->getCmd('option'),
-                    $this->app->input->getCmd('task', $this->app->input->getCmd('view')),
+                    $input->getCmd('option'),
+                    $input->getCmd('task', Factory::getInput($this->app)->getCmd('view')),
                 ]
             )
         );
@@ -199,12 +201,12 @@ abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterf
             $caller     = array_pop($classParts);
         }
         $method   = $stack[1]['function'] ?? null;
-        $referrer = $this->app->input->server->get('HTTP_REFERER', '', 'URL');
+        $referrer = $input->server->get('HTTP_REFERER', '', 'URL');
 
         if ($testName == false) {
             $message = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
         } else {
-            $message = Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
+            $message = $context . ':: ' . Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
         }
 
         if ($this->params->get('logging', 0)) {
@@ -213,7 +215,7 @@ abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterf
             Log::add($context . ' - ' . Uri::getInstance()->getPath(), Log::NOTICE, $category);
         }
 
-        if ($this->app->input->getCmd('format', 'html') == 'html') {
+        if ($input->getCmd('format', 'html') == 'html') {
             switch (strtolower($method)) {
                 case 'onafterinitialise':
                 case 'onafterroute':

@@ -39,14 +39,14 @@ defined('_JEXEC') or die();
 final class Filters
 {
     /**
-     * @var static
+     * @var ?static
      */
-    protected static $instance = null;
+    protected static ?self $instance = null;
 
     /**
      * @var AbstractFilter[]
      */
-    protected $filters = [];
+    protected array $filters = [];
 
     /**
      * @var Registry
