@@ -50,7 +50,7 @@ try {
         define('OSPAMANOT_ROOT', __DIR__);
         define('OSPAMANOT_LIBRARY', OSPAMANOT_ROOT . '/library');
 
-        AutoLoader::register('Alledia', OSPAMANOT_LIBRARY . '/alledia');
+        AutoLoader::register('Alledia', OSPAMANOT_LIBRARY . '/Alledia');
 
         define('OSPAMANOT_LOADED', true);
     }
