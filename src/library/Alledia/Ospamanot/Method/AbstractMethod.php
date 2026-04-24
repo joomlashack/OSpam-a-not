@@ -206,7 +206,7 @@ abstract class AbstractMethod extends AbstractPlugin implements SubscriberInterf
         if ($testName == false) {
             $message = Text::_('PLG_SYSTEM_OSPAMANOT_BLOCK_GENERIC');
         } else {
-            $message = $context . ':: ' . Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
+            $message = Text::sprintf('PLG_SYSTEM_OSPAMANOT_BLOCK_FORM', $testName);
         }
 
         if ($this->params->get('logging', 0)) {
